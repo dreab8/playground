@@ -8,14 +8,12 @@ package chp7;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.junit.Test;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -75,10 +73,10 @@ public class CustomSpliteratorTest {
 		testIds( leafEntityDescriptor );
 	}
 
-	private void testIds(EntityDescriptor<?> entityDescriptorLeaf) {
-		final List<Integer> ids = entityDescriptorLeaf.navigableStream()
+	private void testIds(EntityDescriptor<?> entityDescriptor) {
+		final List<Integer> ids = entityDescriptor.navigableStream()
 				.map( Navigable::getId )
-				.collect( Collectors.toList() );
+				.collect( toList() );
 
 		assertThat( ids.size(), is(4) );
 
@@ -87,5 +85,24 @@ public class CustomSpliteratorTest {
 			System.out.printf( "Checking : i = %s, id = %s", i, id );
 			assertThat( "expected " + i  + "is not equals to " + id, i , is( id ) );
 		}
+	}
+
+	@Test
+	public void testParallel() {
+		List<CustomAttribute> rootEntityAttributes = new ArrayList<>(  );
+		rootEntityAttributes.add( new CustomAttribute( 0 ) );
+		rootEntityAttributes.add( new CustomAttribute( 1 ) );
+		EntityDescriptor<?> rootEntityDescriptor = new EntityDescriptor( "Root", null, rootEntityAttributes );
+
+		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
+		leafEntityAttributes.add( new CustomAttribute( 2 ) );
+		leafEntityAttributes.add( new CustomAttribute( 3 ) );
+		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", rootEntityDescriptor, leafEntityAttributes );
+
+//		StreamSupport.stream( leafEntityDescriptor.navigableSource(), true ).parallel().forEach(
+//				navigable -> System.out.println( "Streaming : " + navigable.getId() )
+//		);
+
+		StreamSupport.stream( leafEntityDescriptor.navigableSource(), true ).map( Navigable::getId ).collect( toList() );
 	}
 }

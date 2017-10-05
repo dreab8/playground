@@ -23,12 +23,21 @@ public interface InheritanceCapable<T> {
 	List<CustomAttribute> getDeclaredAttributes();
 
 	default Stream<Navigable> navigableStream() {
+		return StreamSupport.stream( navigableSource(), false );
+	}
+
+	default Stream<Navigable> declaredNavigableStream() {
 		return StreamSupport.stream( declaredNavigableSource(), false );
 	}
 
 	@SuppressWarnings("unchecked")
-	default Spliterator declaredNavigableSource() {
+	default Spliterator<Navigable> navigableSource() {
 		return new NavigableSpliterator( this, true );
+	}
+
+	@SuppressWarnings("unchecked")
+	default Spliterator<Navigable> declaredNavigableSource() {
+		return new NavigableSpliterator( this, false );
 	}
 
 }

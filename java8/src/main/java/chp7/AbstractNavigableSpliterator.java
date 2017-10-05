@@ -14,32 +14,44 @@ import java.util.function.Consumer;
  * @author Andrea Boriero
  */
 public abstract class AbstractNavigableSpliterator<T extends Navigable> implements Spliterator<T>{
-	public static final int CHARACTERISTICS = ORDERED
+	public static final int CHARACTERISTICS = SIZED
 			& SORTED
 			& DISTINCT
-			// todo (6.0) : see note in `#navigableStream` - & Spliterator.SIZED
 			& NONNULL
 			& IMMUTABLE;
+//	public static final int CHARACTERISTICS = ORDERED
+//			& SORTED
+//			& DISTINCT
+//			// todo (6.0) : see note in `#navigableStream` - & Spliterator.SIZED
+//			& NONNULL
+//			& IMMUTABLE
+//			& CONCURRENT;
 
 	private final Stack<InheritanceCapable> topDownHierarchy;
+	private final int size;
 
 	private Spliterator<T> currentSpliterator;
 
 	private boolean reachedEnd;
 
-	public <T> AbstractNavigableSpliterator(InheritanceCapable container, boolean includeSuperNavigables) {
+	public AbstractNavigableSpliterator(InheritanceCapable container, boolean includeSuperNavigables) {
 		this.topDownHierarchy = new Stack<>();
 
-		addToStack( container, includeSuperNavigables );
+		this.size = addToStack( container, includeSuperNavigables );
 	}
 
-	private <T> void addToStack(InheritanceCapable container, boolean includeSuperNavigables) {
+	private int addToStack(InheritanceCapable container, boolean includeSuperNavigables) {
+		int count = container.getDeclaredAttributes().size();
+
 		topDownHierarchy.push( container );
 
 		final InheritanceCapable superType = container.getSuperclassType();
 		if ( includeSuperNavigables && superType != null ) {
+			count+= superType.getDeclaredAttributes().size();
 			addToStack( superType, includeSuperNavigables );
 		}
+
+		return count;
 	}
 
 
@@ -108,7 +120,12 @@ public abstract class AbstractNavigableSpliterator<T extends Navigable> implemen
 		//		the idea being that we could calculate and store this as part
 		//		of finalizing the runtime model.  at that time the hierarchy would
 		// 		know all of its declared attributes at each level.
-		return 0;
+		return size;
+	}
+
+	@Override
+	public long getExactSizeIfKnown() {
+		return size;
 	}
 
 	@Override
