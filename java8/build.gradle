@@ -1,0 +1,76 @@
+import org.asciidoctor.gradle.AsciidoctorTask
+
+apply plugin: 'java'
+
+version = '1.0'
+
+buildDir = "target"
+
+compileJava {
+    sourceCompatibility = '1.8'
+}
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+
+        maven {
+            name 'jboss-nexus'
+            url "http://repository.jboss.org/nexus/content/groups/public/"
+        }
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
+        classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.15'
+    }
+}
+
+//apply plugin: 'org.asciidoctor.gradle.asciidoctor'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+
+    maven {
+        name 'jboss-nexus'
+        url "http://repository.jboss.org/nexus/content/groups/public/"
+    }
+    jcenter()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+apply plugin: 'org.asciidoctor.convert'
+
+asciidoctorj {
+    version = '1.5.6'
+}
+
+asciidoctor {
+
+    sourceDir = new File("src/docs")
+    outputDir = new File("$buildDir/docs")
+
+//    options doctype: 'book'
+
+    backends 'pdf'
+    attributes 'source-highlighter': 'coderay',
+            toc                 : '',
+            idprefix            : '',
+            idseparator         : '-'
+}
+
+asciidoctor.doLast(
+
+        {
+            println "$buildDir/docs"
+            copy {
+                from new File( "src/docs/imgs" )
+                into new File( new File( "$buildDir/docs" ), "/imgs" )
+            }
+        }
+)

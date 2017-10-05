@@ -1,0 +1,304 @@
+[[Intro]]
+== Java 8 Intro
+
+=== Intro
+
+Java 8 has a new, simpler way of thinking about parallelism.
+
+Java 8 provides a new API (called Streams) that supports many parallel operations to process data and resembles
+the way you might think in database query languages, you express what you want in a higher-level manner,
+and the implementation (here the Streams library) chooses the best low-level execution mechanism.
+
+As a result, it avoids the need for you to write code that uses synchronized, which is not only highly
+error prone but is also more expensive than you may realize on multicore CPUs.
+
+From a slightly revisionist viewpoint, the addition of Streams in Java 8 can be seen as a direct cause of the two
+other additions to Java 8:
+
+* concise techniques to pass code to methods (method references, lambdas)
+* default methods in interfaces.
+
+But thinking of passing code to methods as a mere consequence of Streams downplays its range of uses within Java 8. +
+It gives you a new concise way to express *behavior parameterization*. +
+Suppose you want to write two methods that differ in only a few lines of code;
+you can now just pass the code of the parts that differ as an argument.
+
+
+.Stream processing
+_A stream is a sequence of data items that are conceptually produced one at a time._
+
+Java 8 adds a Streams API in `java.util.stream` based on this idea;
+`Stream<T>` is a sequence of items of type T .
+You can think of it as a fancy iterator for now.
+
+The Streams API has many methods that can be chained to form a complex pipeline just like Unix commands.
+
+The key motivation for this is that you can now program in Java 8 at a higher level of abstraction,
+structuring your thoughts of turning a stream of this into a stream of that
+(similarly to how you think when writing database queries) rather than one item at a time. +
+Another advantage is that Java 8 can transparently run your pipeline of Stream operations on several CPU cores
+on disjoint parts of the input—this is parallelism almost for free instead of hard work using Threads.
+
+.Behaviour parametrization ( Passing code to methods )
+
+The second programming concept added to Java 8 is the ability to pass a piece of code to an API. +
+Java 8 adds the ability to pass methods (your code) as arguments to other methods. +
+We also refer to this as behavior parameterization.
+
+.Parallelism and shared mutable data
+You must provide behavior that is safe to execute concurrently on different pieces of the input. +
+This means writing code that does not access shared mutable data to do its job.
+
+Sometimes these are referred to as _pure functions_ or _side-effect-free functions_ or _stateless
+functions_.
+
+Java 8 streams exploit parallelism more easily than Java’s existing Threads API, so although it’s possible to use
+synchronized to break the no-shared-mutable-data rule, it’s fighting the system in that it’s abusing an abstraction
+optimized around that rule. +
+Using synchronized across multiple processing cores is often far more expensive than you expect, because synchronization
+forces code to execute sequentially, which works against the goal of parallelism. +
+
+NOTE: Two of these points (no shared mutable data and the ability to pass methods and functions-code-to other methods) are
+ the cornerstones of what’s generally described as the paradigm of functional programming. +
+In contrast, in the imperative programming paradigm you typically describe a program in terms of a sequence of statements
+that mutate state. The no-shared-mutable-data requirement means that a method is perfectly described solely
+by the way it transforms arguments to results; in other words, it behaves as a mathematical function and
+has no (visible) side effects.
+
+=== Functions in Java
+
+The word function in programming languages is commonly used as a synonym for method, particularly a static method; +
+this is in addition to it being used for mathematical function, one without side effects.
+
+Java 8 adds functions as new forms of value.
+
+.Methods and lambdas as first-class citizens
+
+Suppose you want to filter all the hidden files in a directory. You need to start writing a method that given a File
+will tell you whether it’s hidden or not. Thankfully there’s such a method inside the File class called isHidden. +
+It can be viewed as a function that takes a File and returns a boolean. But to use it for filtering you need to wrap it
+into a FileFilter object that you then pass to the File.listFiles method, as follows:
+
+[source,java]
+----
+File[] hiddenFiles = new File(".").listFiles(new FileFilter() {
+    public boolean accept(File file) {
+        return file.isHidden(); // <1>
+    }
+});
+----
+<1> Filtering hidden files
+
+Now, in Java 8 you can rewrite that code as follows:
+[source,java]
+----
+File[] hiddenFiles = new File(".").listFiles(File::isHidden);
+----
+
+You already have the function isHidden available, so you just pass it to the listFiles method using the
+Java 8 *method reference* *::* syntax (meaning “use this method as a value”);
+
+*Methods are no longer second-class values.* +
+Analogously to using an object reference  when you pass an object around (and object references are created by new),
+in Java 8  when you write `File::isHidden` you create a *method reference*, which can similarly be passed around. +
+
+.LAMBDAS—ANONYMOUS FUNCTIONS
+
+As well as allowing (named) methods to be first-class values, Java 8 allows a richer idea of functions as values,
+including *lambdas* (or anonymous functions). +
+
+For example, you can now write `(int x) -> x + 1` to mean “the function that, when called with argument x, returns
+the value x + 1.” +
+
+You might wonder why this is necessary because you could define a method `add1` inside a class
+`MyMathsUtils` and then write `MyMathsUtils::add1` +
+You could, but the new _lambda syntax is more concise for cases where you don’t have a convenient method and class available_.
+
+[source,java]
+----
+public static boolean isGreenApple(Apple apple) {
+    return "green".equals( apple.getColor() );
+}
+
+public static boolean isHeavyApple(Apple apple) {
+	return apple.getWeight() > 150;
+}
+
+public static List<Apple> filterApples(
+    	List<Apple> inventory,
+	    Predicate<Apple> p) { <1>
+    List<Apple> result = new ArrayList<>();
+	for ( Apple apple : inventory ) {
+		if ( p.test( apple ) ) {
+			result.add( apple );
+		}
+	}
+	return result;
+}
+----
+
+<1> A method is passed as a Predicate parameter named p
+
+And to use this, you call
+[source,java]
+----
+Apple.filterApples( apples, Apple::isHeavyApple );
+----
+
+[source,java]
+----
+package java.util.function
+
+@FunctionalInterface
+public interface Predicate<T> {
+	boolean test(T t);
+
+	...
+}
+----
+
+NOTE: The word predicate is often used in mathematics to mean something function-like that takes a value for an argument
+and returns true or false.
+
+IMPORTANT: Java 8 would also allow you to write Function<Apple,Boolean> but
+using Predicate<Apple> is more standard (and slightly more efficient because it avoids boxing a boolean into a Boolean).
+
+.From passing methods to lambdas
+
+Passing methods as values is clearly useful, but it’s a bit annoying having to write a definition for short methods
+such as isHeavyApple and isGreenApple when they’re used perhaps only once or twice. +
+Java 8 introduces a new notation *(anonymous functions, or lambdas)* that enables you to write
+just:
+[source,java]
+----
+filterApples( inventory, (Apple a) -> "green".equals( a.getColor() ) );
+----
+
+or
+[source,java]
+----
+filterApples( inventory, (Apple a) -> a.getWeight() > 150 );
+----
+or even
+[source,java]
+----
+filterApples( inventory, (Apple a) -> a.getWeight() < 80 || "brown".equals( a.getColor() ) );
+----
+
+=== Streams
+
+Java 8 instead contains a whole new Collections-like API called Streams, containing a comprehensive set of operations
+similar to filter that functional programmers may be familiar with (for example, map, reduce), along with methods
+to convert between Collections and Streams.
+
+Nearly every Java application makes and processes collections. But working with collections isn’t always ideal.
+
+[source,java]
+----
+Map<Currency, List<Transaction>> transactionsByCurrencies = new HashMap<>();
+for ( Transaction transaction : transactions ) {
+	if ( transaction.getPrice() > 1000 ) {
+		List<Transaction> transactionsForCurrency =
+		    transactionsByCurrencies.get( transaction.getCurrency() );
+		if ( transactionsForCurrency == null ) {
+			transactionsForCurrency = new ArrayList<>();
+			transactionsByCurrencies.put( transaction.getCurrency(), transactionsForCurrency );
+		}
+		transactionsForCurrency.add( transaction );
+	}
+}
+----
+
+Using the Streams API, the same code can be written as :
+
+[source,java]
+----
+import static java.util.stream.Collectors.groupingBy;
+
+Map<Currency, List<Transaction>> transactionsByCurrencies =
+                        transactions
+                        .stream()
+                        .filter( (Transaction t) -> t.getPrice() > 1000 )
+                        .collect( groupingBy( Transaction::getCurrency ) );
+----
+
+Streams API provides a very different way to process data in comparison to the Collections API.
+
+Using a collection, you’re managing the iteration process yourself. You need to iterate through each element one by
+one using a for-each loop and then process the elements. We call this way of iterating over data *external iteration*.
+
+In contrast, using the Streams API, you don’t need to think in terms of loops at all.
+The data processing happens internally inside the library. We call this idea *internal iteration*.
+
+There are many data processing patterns that occur over and over again:
+
+* filtering data based on a criterion (for example, heavy apples),
+* extracting data (for example, extracting the weight field from each apple in a list),
+* or grouping data (for example, grouping a list of numbers into separate lists of even and odd numbers)
+* and so on
+
+such operations can often be parallelized. For instance filtering a list on two CPUs could be done by asking one CPU
+to process the first half of a list and the second CPU to process the other half of the list
+(this is called the forking step). +
+The CPUs then filter their respective half-lists. Finally one CPU would join the two results.
+
+NOTE: *Collections* is mostly about storing and accessing data. +
+*Streams* is mostly about describing computations on data. +
+The key point here is that Streams allows and encourages the elements within a Stream to be processed in parallel. +
+
+Although it may seem odd at first, often the fastest way to filter a `Collection` is to convert it to a `Stream`,
+process it in parallel, and then convert it back to a List.
+
+Sequential processing:
+
+[source,java]
+----
+import static java.util.stream.Collectors.toList;
+
+List<Apple> heavyApples = inventory
+                          .stream()
+                          .filter((Apple a) -> a.getWeight() > 150)
+                          .collect(toList());
+----
+
+Parallel processing:
+
+[source,java]
+----
+import static java.util.stream.Collectors.toList;
+
+List<Apple> heavyApples = inventory
+                          .parallelStream()
+                          .filter((Apple a) -> a.getWeight() > 150)
+                          .collect(toList());
+----
+
+=== Default methods
+
+Default methods are added largely to support library designers by enabling them to write more evolvable interfaces. +
+
+An interface can now contain method signatures for which an implementing class does not provide an implementation! +
+The missing method bodies are given as part of the interface (hence default implementations) rather than in the
+implementing class.
+
+In Java 8 you can now call the sort method directly on a `List`. This is made possible with the following default method
+in the Java 8 `List` interface, which calls the static method `Collections.sort`:
+
+[source,java]
+----
+default void sort(Comparator<? super E> c) {
+    Collections.sort(this, c);
+}
+----
+This means any concrete classes of List don’t have to explicitly implement sort, whereas in previous Java versions such
+concrete classes would fail to recompile unless they provided an implementation for sort.
+
+=== Optional
+
+`Optional<T>` class that, if used consistently, can help you avoid NullPointer exceptions. +
+It’s a container object that may or not contain a value.
+
+`Optional<T>` includes methods to explicitly deal with the case where a value is absent, and as a result you can avoid
+NullPointer exceptions.
+
+<<Chp2.adoc#behavioural-behavioural,Chapter 2 => >>
