@@ -6,6 +6,8 @@
  */
 package chp7;
 
+import java.util.Locale;
+
 /**
  * @author Andrea Boriero
  */
@@ -20,5 +22,10 @@ public class CustomAttribute implements Navigable {
 	@Override
 	public int getId() {
 		return id;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "[id=" + id + "]";
 	}
 }

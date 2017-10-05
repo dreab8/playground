@@ -12,14 +12,24 @@ import java.util.Set;
 /**
  * @author Andrea Boriero
  */
-public class EntityDescriptor implements InheritanceCapable {
+public class EntityDescriptor<J> implements InheritanceCapable<J> {
 
-	private InheritanceCapable superclass;
-	private List<CustomAttribute> declaredAttributes;
+	private final String name;
+	private final InheritanceCapable superclass;
+	private final List<CustomAttribute> declaredAttributes;
 
-	public EntityDescriptor(InheritanceCapable superclass, List<CustomAttribute> declaredAttributes) {
+	public EntityDescriptor(
+			String name,
+			InheritanceCapable superclass,
+			List<CustomAttribute> declaredAttributes) {
+		this.name = name;
 		this.superclass = superclass;
 		this.declaredAttributes = declaredAttributes;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 	@Override
@@ -30,5 +40,10 @@ public class EntityDescriptor implements InheritanceCapable {
 	@Override
 	public List<CustomAttribute> getDeclaredAttributes() {
 		return declaredAttributes;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "[" + getName()+ "]";
 	}
 }

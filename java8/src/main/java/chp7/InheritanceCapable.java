@@ -16,6 +16,8 @@ import java.util.stream.StreamSupport;
  * @author Andrea Boriero
  */
 public interface InheritanceCapable<T> {
+	String getName();
+
 	InheritanceCapable<? super T> getSuperclassType();
 
 	List<CustomAttribute> getDeclaredAttributes();

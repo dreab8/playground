@@ -34,15 +34,14 @@ public abstract class AbstractNavigableSpliterator<T extends Navigable> implemen
 	}
 
 	private <T> void addToStack(InheritanceCapable container, boolean includeSuperNavigables) {
+		topDownHierarchy.push( container );
+
 		final InheritanceCapable superType = container.getSuperclassType();
 		if ( includeSuperNavigables && superType != null ) {
 			addToStack( superType, includeSuperNavigables );
 		}
-		topDownHierarchy.push( container );
 	}
 
-
-	protected abstract Spliterator<T> nextSpliterator(InheritanceCapable container);
 
 	@Override
 	public boolean tryAdvance(Consumer<? super T> action) {
@@ -51,42 +50,56 @@ public abstract class AbstractNavigableSpliterator<T extends Navigable> implemen
 			return false;
 		}
 
-		if ( currentSpliterator == null || !currentSpliterator.tryAdvance( action ) ) {
-			currentSpliterator = advanceSpliterator( action );
-			if ( topDownHierarchy.isEmpty() ) {
-				reachedEnd = true;
-				return false;
-			}
-
-			currentSpliterator = nextSpliterator( topDownHierarchy.pop() );
+		if ( currentSpliterator == null ) {
+			currentSpliterator = nextSpliterator();
 
 			if ( currentSpliterator == null ) {
-				reachedEnd = true;
 				return false;
 			}
 		}
 
-		return true;
+		return internalTryAdvance( action );
 	}
 
-	private Spliterator<T> advanceSpliterator(Consumer<? super T> action) {
+	private Spliterator<T> nextSpliterator() {
 		if ( topDownHierarchy.isEmpty() ) {
+			reachedEnd = true;
 			return null;
 		}
 
-		final Spliterator<T> next = nextSpliterator( topDownHierarchy.pop() );
-		if ( ! next.tryAdvance( action ) ) {
-			return advanceSpliterator( action );
+		System.out.println( "Popping hierarchy for next Spliterator" );
+
+		return nextSpliterator( topDownHierarchy.pop() );
+	}
+
+	protected abstract Spliterator<T> nextSpliterator(InheritanceCapable container);
+
+	private boolean internalTryAdvance(Consumer<? super T> action) {
+		boolean reply = currentSpliterator.tryAdvance( action );
+
+		if ( reply == false ) {
+			while ( !reachedEnd && reply == false ) {
+				// see if there is another Spliterator left
+				currentSpliterator = nextSpliterator();
+				if ( currentSpliterator == null ) {
+					assert reachedEnd;
+					return false;
+				}
+				reply = currentSpliterator.tryAdvance( action );
+			}
 		}
 
-		return next;
+		return reply;
 	}
 
 	@Override
 	public Spliterator<T> trySplit() {
 		System.out.println("try split");
+		if ( topDownHierarchy.isEmpty() ) {
+			return null;
+		}
 
-		return currentSpliterator;
+		return nextSpliterator();
 	}
 
 	@Override

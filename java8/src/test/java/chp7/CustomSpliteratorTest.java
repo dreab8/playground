@@ -7,6 +7,7 @@
 package chp7;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,24 +26,66 @@ public class CustomSpliteratorTest {
 
 	@Test
 	public void testIt(){
-		List<CustomAttribute> entityDescriptorAttributes = new ArrayList<>(  );
-		entityDescriptorAttributes.add( new CustomAttribute( 0 ) );
-		entityDescriptorAttributes.add( new CustomAttribute( 1 ) );
-		EntityDescriptor entityDescriptor1 = new EntityDescriptor( null, entityDescriptorAttributes );
+		List<CustomAttribute> rootEntityAttributes = new ArrayList<>(  );
+		rootEntityAttributes.add( new CustomAttribute( 0 ) );
+		rootEntityAttributes.add( new CustomAttribute( 1 ) );
+		EntityDescriptor rootEntityDescriptor = new EntityDescriptor( "Root", null, rootEntityAttributes );
 
-		List<CustomAttribute> entityDescriptorAttributesSecond = new ArrayList<>(  );
-		entityDescriptorAttributesSecond.add( new CustomAttribute( 2 ) );
-		entityDescriptorAttributesSecond.add( new CustomAttribute( 3 ) );
-		EntityDescriptor entityDescriptor2 = new EntityDescriptor( entityDescriptor1, entityDescriptorAttributesSecond );
+		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
+		leafEntityAttributes.add( new CustomAttribute( 2 ) );
+		leafEntityAttributes.add( new CustomAttribute( 3 ) );
+		EntityDescriptor leafEntityDescriptor = new EntityDescriptor( "Leaf", rootEntityDescriptor, leafEntityAttributes );
 
-		Stream<Navigable> stream = entityDescriptor2.navigableStream();
-		final List<Integer> ids = new ArrayList(  );
-		stream.forEach( navigable -> ids.add(navigable.getId()) );
+		testIds( leafEntityDescriptor );
+	}
 
-		for(int i = 0; i < ids.size(); i++){
-			assertThat( "expected " + i  + "is not equals to " + ids.get( i ), i , is(ids.get( i )) );
+	@Test
+	public void testMiddleMissingAttribute() {
+		List<CustomAttribute> rootEntityAttributes = new ArrayList<>(  );
+		rootEntityAttributes.add( new CustomAttribute( 0 ) );
+		rootEntityAttributes.add( new CustomAttribute( 1 ) );
+		EntityDescriptor<?> rootEntityDescriptor = new EntityDescriptor<>( "Root", null, rootEntityAttributes );
+
+		List<CustomAttribute> middleEntityAttributes = Collections.emptyList();
+		EntityDescriptor middleEntityDescriptor = new EntityDescriptor( "Middle", rootEntityDescriptor, middleEntityAttributes );
+
+		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
+		leafEntityAttributes.add( new CustomAttribute( 2 ) );
+		leafEntityAttributes.add( new CustomAttribute( 3 ) );
+		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", middleEntityDescriptor, leafEntityAttributes );
+
+		testIds( leafEntityDescriptor );
+	}
+
+	@Test
+	public void testRootMissingAttributes() {
+		List<CustomAttribute> rootEntityAttributes = Collections.emptyList();
+		EntityDescriptor<?> rootEntityDescriptor = new EntityDescriptor<>( "Root", null, rootEntityAttributes );
+
+		List<CustomAttribute> middleEntityAttributes = new ArrayList<>(  );
+		middleEntityAttributes.add( new CustomAttribute( 0 ) );
+		middleEntityAttributes.add( new CustomAttribute( 1 ) );
+		EntityDescriptor middleEntityDescriptor = new EntityDescriptor( "Middle", rootEntityDescriptor, middleEntityAttributes );
+
+		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
+		leafEntityAttributes.add( new CustomAttribute( 2 ) );
+		leafEntityAttributes.add( new CustomAttribute( 3 ) );
+		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", middleEntityDescriptor, leafEntityAttributes );
+
+		testIds( leafEntityDescriptor );
+	}
+
+	private void testIds(EntityDescriptor<?> entityDescriptorLeaf) {
+		final List<Integer> ids = entityDescriptorLeaf.navigableStream()
+				.map( Navigable::getId )
+				.collect( Collectors.toList() );
+
+		assertThat( ids.size(), is(4) );
+
+		for (int i = 0; i < ids.size(); i++) {
+			final Integer id = ids.get( i );
+			System.out.printf( "Checking : i = %s, id = %s", i, id );
+			assertThat( "expected " + i  + "is not equals to " + id, i , is( id ) );
 		}
-
-
 	}
 }

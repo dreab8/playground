@@ -9,7 +9,7 @@ package chp7;
 /**
  * @author Andrea Boriero
  */
-public interface Navigable {
+public interface Navigable<J>{
 
 	int getId();
 }
