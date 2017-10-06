@@ -9,7 +9,6 @@ package chp7;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 import org.junit.Test;
 
@@ -25,13 +24,13 @@ public class CustomSpliteratorTest {
 	@Test
 	public void testIt(){
 		List<CustomAttribute> rootEntityAttributes = new ArrayList<>(  );
-		rootEntityAttributes.add( new CustomAttribute( 0 ) );
 		rootEntityAttributes.add( new CustomAttribute( 1 ) );
+		rootEntityAttributes.add( new CustomAttribute( 2 ) );
 		EntityDescriptor rootEntityDescriptor = new EntityDescriptor( "Root", null, rootEntityAttributes );
 
 		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
-		leafEntityAttributes.add( new CustomAttribute( 2 ) );
 		leafEntityAttributes.add( new CustomAttribute( 3 ) );
+		leafEntityAttributes.add( new CustomAttribute( 4 ) );
 		EntityDescriptor leafEntityDescriptor = new EntityDescriptor( "Leaf", rootEntityDescriptor, leafEntityAttributes );
 
 		testIds( leafEntityDescriptor );
@@ -40,16 +39,16 @@ public class CustomSpliteratorTest {
 	@Test
 	public void testMiddleMissingAttribute() {
 		List<CustomAttribute> rootEntityAttributes = new ArrayList<>(  );
-		rootEntityAttributes.add( new CustomAttribute( 0 ) );
 		rootEntityAttributes.add( new CustomAttribute( 1 ) );
+		rootEntityAttributes.add( new CustomAttribute( 2 ) );
 		EntityDescriptor<?> rootEntityDescriptor = new EntityDescriptor<>( "Root", null, rootEntityAttributes );
 
 		List<CustomAttribute> middleEntityAttributes = Collections.emptyList();
 		EntityDescriptor middleEntityDescriptor = new EntityDescriptor( "Middle", rootEntityDescriptor, middleEntityAttributes );
 
 		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
-		leafEntityAttributes.add( new CustomAttribute( 2 ) );
 		leafEntityAttributes.add( new CustomAttribute( 3 ) );
+		leafEntityAttributes.add( new CustomAttribute( 4 ) );
 		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", middleEntityDescriptor, leafEntityAttributes );
 
 		testIds( leafEntityDescriptor );
@@ -61,27 +60,51 @@ public class CustomSpliteratorTest {
 		EntityDescriptor<?> rootEntityDescriptor = new EntityDescriptor<>( "Root", null, rootEntityAttributes );
 
 		List<CustomAttribute> middleEntityAttributes = new ArrayList<>(  );
-		middleEntityAttributes.add( new CustomAttribute( 0 ) );
 		middleEntityAttributes.add( new CustomAttribute( 1 ) );
+		middleEntityAttributes.add( new CustomAttribute( 2 ) );
 		EntityDescriptor middleEntityDescriptor = new EntityDescriptor( "Middle", rootEntityDescriptor, middleEntityAttributes );
 
 		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
-		leafEntityAttributes.add( new CustomAttribute( 2 ) );
 		leafEntityAttributes.add( new CustomAttribute( 3 ) );
+		leafEntityAttributes.add( new CustomAttribute( 4 ) );
 		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", middleEntityDescriptor, leafEntityAttributes );
 
 		testIds( leafEntityDescriptor );
 	}
 
 	private void testIds(EntityDescriptor<?> entityDescriptor) {
-		final List<Integer> ids = entityDescriptor.navigableStream()
-				.map( Navigable::getId )
-				.collect( toList() );
+		testStreams(
+				entityDescriptor.navigableStream().map( Navigable::getNavigablePosition ).collect( toList() ),
+				5
+		);
 
-		assertThat( ids.size(), is(4) );
+		testStreams(
+				entityDescriptor.navigableStream( StateArrayElementContributor.class )
+						.map( StateArrayElementContributor::getStateArrayPosition )
+						.collect( toList() ),
+				4
+		);
 
-		for (int i = 0; i < ids.size(); i++) {
-			final Integer id = ids.get( i );
+		testStreams(
+				entityDescriptor.navigableStream( NonIdAttribute.class )
+						.map( StateArrayElementContributor::getStateArrayPosition )
+						.collect( toList() ),
+				4
+		);
+
+		testStreams(
+				entityDescriptor.navigableStream( PersistentAttribute.class )
+						.map( StateArrayElementContributor::getStateArrayPosition )
+						.collect( toList() ),
+				4
+		);
+	}
+
+	private void testStreams(List<Integer> values, int expectedCount) {
+		assertThat( values.size(), is(expectedCount) );
+
+		for (int i = 0; i < values.size(); i++) {
+			final Integer id = values.get( i );
 			System.out.printf( "Checking : i = %s, id = %s", i, id );
 			assertThat( "expected " + i  + "is not equals to " + id, i , is( id ) );
 		}
@@ -90,19 +113,34 @@ public class CustomSpliteratorTest {
 	@Test
 	public void testParallel() {
 		List<CustomAttribute> rootEntityAttributes = new ArrayList<>(  );
-		rootEntityAttributes.add( new CustomAttribute( 0 ) );
 		rootEntityAttributes.add( new CustomAttribute( 1 ) );
+		rootEntityAttributes.add( new CustomAttribute( 2 ) );
 		EntityDescriptor<?> rootEntityDescriptor = new EntityDescriptor( "Root", null, rootEntityAttributes );
 
 		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
-		leafEntityAttributes.add( new CustomAttribute( 2 ) );
 		leafEntityAttributes.add( new CustomAttribute( 3 ) );
+		leafEntityAttributes.add( new CustomAttribute( 4 ) );
 		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", rootEntityDescriptor, leafEntityAttributes );
 
-//		StreamSupport.stream( leafEntityDescriptor.navigableSource(), true ).parallel().forEach(
-//				navigable -> System.out.println( "Streaming : " + navigable.getId() )
-//		);
+		leafEntityDescriptor.navigableStream().parallel().forEach(
+				navigable -> System.out.println( "Streaming : " + navigable.getNavigablePosition() )
+		);
+	}
 
-		StreamSupport.stream( leafEntityDescriptor.navigableSource(), true ).map( Navigable::getId ).collect( toList() );
+	@Test
+	public void testFiltered() {
+		List<CustomAttribute> rootEntityAttributes = new ArrayList<>(  );
+		rootEntityAttributes.add( new CustomAttribute( 1 ) );
+		rootEntityAttributes.add( new CustomAttribute( 2 ) );
+		EntityDescriptor<?> rootEntityDescriptor = new EntityDescriptor( "Root", null, rootEntityAttributes );
+
+		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
+		leafEntityAttributes.add( new CustomAttribute( 3 ) );
+		leafEntityAttributes.add( new CustomAttribute( 4 ) );
+		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", rootEntityDescriptor, leafEntityAttributes );
+
+		leafEntityDescriptor.navigableStream( ).forEach(
+				navigable -> System.out.println( "Streaming : " + navigable.getNavigablePosition() )
+		);
 	}
 }

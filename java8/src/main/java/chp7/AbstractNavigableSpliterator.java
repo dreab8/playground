@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 /**
  * @author Andrea Boriero
  */
-public abstract class AbstractNavigableSpliterator<T extends Navigable> implements Spliterator<T>{
+public abstract class AbstractNavigableSpliterator<T extends Navigable> implements Spliterator<T> {
 	public static final int CHARACTERISTICS = SIZED
 			& SORTED
 			& DISTINCT

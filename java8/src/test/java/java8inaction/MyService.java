@@ -27,7 +27,7 @@ public class MyService {
 	}
 
 	public Integer getI() {
-		logger.log( Level.WARNING, "getId" );
+		logger.log( Level.WARNING, "getNavigablePosition" );
 		synchronized (this) {
 			logger.log( Level.WARNING, "Enter synchro" );
 			int i = 1000;
@@ -42,7 +42,7 @@ public class MyService {
 //			}
 			j++;
 
-			logger.log( Level.WARNING, "FINISHED getId " + j );
+			logger.log( Level.WARNING, "FINISHED getNavigablePosition " + j );
 			return j;
 		}
 	}

@@ -11,5 +11,5 @@ package chp7;
  */
 public interface Navigable<J>{
 
-	int getId();
+	int getNavigablePosition();
 }

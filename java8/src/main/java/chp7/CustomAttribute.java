@@ -6,26 +6,35 @@
  */
 package chp7;
 
-import java.util.Locale;
-
 /**
  * @author Andrea Boriero
  */
-public class CustomAttribute implements Navigable {
+public class CustomAttribute implements NonIdAttribute {
+	private final int navPosition;
+	private final int stateArrayPosition;
 
-	private int id;
-
-	public CustomAttribute(int id) {
-		this.id = id;
+	public CustomAttribute(int navPosition) {
+		this.navPosition = navPosition;
+		this.stateArrayPosition = navPosition-1;
 	}
 
 	@Override
-	public int getId() {
-		return id;
+	public int getNavigablePosition() {
+		return navPosition;
+	}
+
+	@Override
+	public int getStateArrayPosition() {
+		return stateArrayPosition;
 	}
 
 	@Override
 	public String toString() {
-		return super.toString() + "[id=" + id + "]";
+		return super.toString() + "[id=" + navPosition + "]";
+	}
+
+	@Override
+	public String getAttributeInfo() {
+		return "simple state field : " + navPosition;
 	}
 }
