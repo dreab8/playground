@@ -98,6 +98,11 @@ jmh {
 
 }
 
+// a good idea generally, but here.. not so much because it executes
+// all of the Java 8 tests/ including the book ones, which we don't
+// care about here
+// tasks.jmh.dependsOn test
+
 task wrapper(type: Wrapper) {
     gradleVersion = '4.2'
     // grab sources, docs as well... better IDE integration

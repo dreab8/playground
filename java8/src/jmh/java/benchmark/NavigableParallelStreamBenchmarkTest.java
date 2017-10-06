@@ -6,13 +6,13 @@ import org.openjdk.jmh.annotations.Benchmark;
 /**
  * @author Andrea Boriero
  */
-public class NavigableStreamBenchmarkTest extends BenchmarkTestBaseSetUp {
-
+public class NavigableParallelStreamBenchmarkTest extends BenchmarkTestBaseSetUp {
 	@Benchmark
 	public void testIt(TestState state) {
 		final CountKeeper countKeeper = new CountKeeper();
 
 		state.leafEntityDescriptor.navigableStream()
+				.parallel()
 				.map( Navigable::getNavigablePosition )
 				.forEach( integer -> countKeeper.count++ );
 		assert countKeeper.count == 5;
@@ -21,4 +21,5 @@ public class NavigableStreamBenchmarkTest extends BenchmarkTestBaseSetUp {
 	private static class CountKeeper {
 		private int count;
 	}
+
 }
