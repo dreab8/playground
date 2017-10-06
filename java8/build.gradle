@@ -97,3 +97,10 @@ jmh {
     resultsFile = project.file("${project.buildDir}/reports/jmh/results.txt") // results file
 
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.2'
+    // grab sources, docs as well... better IDE integration
+    // but I am unfortunately having trouble using it :(
+    //distributionType = DistributionType.ALL
+}
