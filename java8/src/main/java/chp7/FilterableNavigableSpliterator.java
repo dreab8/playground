@@ -61,7 +61,7 @@ public class FilterableNavigableSpliterator<N extends Navigable<?>> implements S
 
 	@Override
 	public boolean tryAdvance(Consumer<? super N> action) {
-		System.out.println("try advance");
+//		System.out.println("try advance");
 		if ( reachedEnd ) {
 			// should indicate we are past the end of all sub-spliterators
 			return false;
@@ -85,7 +85,7 @@ public class FilterableNavigableSpliterator<N extends Navigable<?>> implements S
 			return null;
 		}
 
-		System.out.println( "Popping Stack element for next Spliterator" );
+//		System.out.println( "Popping Stack element for next Spliterator" );
 
 		return topDownNavListStack.pop().spliterator();
 	}
@@ -111,7 +111,7 @@ public class FilterableNavigableSpliterator<N extends Navigable<?>> implements S
 
 	@Override
 	public Spliterator<N> trySplit() {
-		System.out.println("try split");
+//		System.out.println("try split");
 		if ( topDownNavListStack.isEmpty() ) {
 			return null;
 		}

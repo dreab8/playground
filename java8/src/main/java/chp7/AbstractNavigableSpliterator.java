@@ -57,7 +57,7 @@ public abstract class AbstractNavigableSpliterator<T extends Navigable> implemen
 
 	@Override
 	public boolean tryAdvance(Consumer<? super T> action) {
-		System.out.println("try advance");
+//		System.out.println("try advance");
 		if ( reachedEnd ) {
 			return false;
 		}
@@ -79,7 +79,7 @@ public abstract class AbstractNavigableSpliterator<T extends Navigable> implemen
 			return null;
 		}
 
-		System.out.println( "Popping hierarchy for next Spliterator" );
+//		System.out.println( "Popping hierarchy for next Spliterator" );
 
 		return nextSpliterator( topDownHierarchy.pop() );
 	}
@@ -106,7 +106,7 @@ public abstract class AbstractNavigableSpliterator<T extends Navigable> implemen
 
 	@Override
 	public Spliterator<T> trySplit() {
-		System.out.println("try split");
+//		System.out.println("try split");
 		if ( topDownHierarchy.isEmpty() ) {
 			return null;
 		}
