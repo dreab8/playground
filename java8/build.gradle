@@ -95,7 +95,7 @@ jmh {
     fork = 5 //default 10
     humanOutputFile = project.file("${project.buildDir}/reports/jmh/human.txt") // human-readable output file
     resultsFile = project.file("${project.buildDir}/reports/jmh/results.txt") // results file
-
+    jmhVersion = '1.19'
 }
 
 // a good idea generally, but here.. not so much because it executes
@@ -104,8 +104,7 @@ jmh {
 // tasks.jmh.dependsOn test
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.2'
+    gradleVersion = '4.2.1'
     // grab sources, docs as well... better IDE integration
-    // but I am unfortunately having trouble using it :(
-    //distributionType = DistributionType.ALL
+    distributionType = 'ALL'
 }
