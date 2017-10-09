@@ -24,18 +24,21 @@ public class BenchmarkTestBaseSetUp {
 	@State(Scope.Thread)
 	public static class TestState {
 
-
+		public EntityDescriptor<?> rootEntityDescriptor;
+		public EntityDescriptor<?> middleEntityDescriptor;
 		public EntityDescriptor<?> leafEntityDescriptor;
 
+		public int totalAttributeCount = 5;
+
 		@Setup
-		public void setUp(){
+		public void setUp() {
 			List<CustomAttribute> rootEntityAttributes = Collections.emptyList();
-			EntityDescriptor<?> rootEntityDescriptor = new EntityDescriptor<>( "Root", null, rootEntityAttributes );
+			this.rootEntityDescriptor = new EntityDescriptor<>( "Root", null, rootEntityAttributes );
 
 			List<CustomAttribute> middleEntityAttributes = new ArrayList<>();
 			middleEntityAttributes.add( new CustomAttribute( 1 ) );
 			middleEntityAttributes.add( new CustomAttribute( 2 ) );
-			EntityDescriptor middleEntityDescriptor = new EntityDescriptor(
+			this.middleEntityDescriptor = new EntityDescriptor(
 					"Middle",
 					rootEntityDescriptor,
 					middleEntityAttributes

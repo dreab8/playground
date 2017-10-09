@@ -6,22 +6,33 @@
  */
 package benchmark;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import chp7.Navigable;
+import chp7.StateArrayElementContributor;
 import org.openjdk.jmh.annotations.Benchmark;
 
 /**
  * @author Andrea Boriero
  */
+@SuppressWarnings("unused")
 public class NavigablesForEachBenchmarkTest extends BenchmarkTestBaseSetUp {
 
+	@SuppressWarnings("unchecked")
 	@Benchmark
 	public void testIt(TestState state) {
-		final List<Integer> positions = new ArrayList<>(  );
-		List<Navigable<?>> navigables = state.leafEntityDescriptor.getNavigables();
-		navigables.forEach( navigable -> positions.add( navigable.getNavigablePosition() ) );
-		assert positions.size() == 5;
+		final Object[] hydratedState = new Object[ state.totalAttributeCount ];
+
+		final int count = state.totalAttributeCount;
+
+		for ( int position = 0; position < count; position++ ) {
+			state.leafEntityDescriptor.getNavigables()
+					.forEach(
+							navigable -> {
+								final StateArrayElementContributor contributor = (StateArrayElementContributor) navigable;
+								final int index = contributor.getStateArrayPosition();
+								hydratedState[ index ] = contributor.deepCopy( hydratedState[ index ] );
+							}
+					);
+		}
+
+		assert hydratedState[0] == StateArrayElementContributor.NOT_NULL;
 	}
 }

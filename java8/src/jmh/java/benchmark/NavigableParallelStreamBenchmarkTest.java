@@ -1,25 +1,27 @@
 package benchmark;
 
-import chp7.Navigable;
+import chp7.StateArrayElementContributor;
 import org.openjdk.jmh.annotations.Benchmark;
 
 /**
  * @author Andrea Boriero
  */
+@SuppressWarnings("unused")
 public class NavigableParallelStreamBenchmarkTest extends BenchmarkTestBaseSetUp {
+	@SuppressWarnings("unchecked")
 	@Benchmark
 	public void testIt(TestState state) {
-		final CountKeeper countKeeper = new CountKeeper();
+		final Object[] hydratedState = new Object[ state.totalAttributeCount ];
 
-		state.leafEntityDescriptor.navigableStream()
+		state.leafEntityDescriptor.navigableStream( StateArrayElementContributor.class )
 				.parallel()
-				.map( Navigable::getNavigablePosition )
-				.forEach( integer -> countKeeper.count++ );
-		assert countKeeper.count == 5;
-	}
+				.forEach(
+						attribute -> {
+							int position = attribute.getStateArrayPosition();
+							hydratedState[ position ] = attribute.deepCopy( hydratedState[ position ] );
+						}
+				);
 
-	private static class CountKeeper {
-		private int count;
+		assert hydratedState[0] == StateArrayElementContributor.NOT_NULL;
 	}
-
 }

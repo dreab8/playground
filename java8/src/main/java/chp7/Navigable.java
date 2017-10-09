@@ -10,6 +10,5 @@ package chp7;
  * @author Andrea Boriero
  */
 public interface Navigable<J>{
-
 	int getNavigablePosition();
 }
