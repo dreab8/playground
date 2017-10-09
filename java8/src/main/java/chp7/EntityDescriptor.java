@@ -18,6 +18,9 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 	private final String name;
 	private final InheritanceCapable<? super J> superclass;
 	private final List<CustomAttribute> declaredAttributes;
+	private final List declaredNavigables;
+	private final List navigables;
+
 
 	public EntityDescriptor(
 			String name,
@@ -26,6 +29,7 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 		this.name = name;
 		this.superclass = superclass;
 		this.declaredAttributes = declaredAttributes;
+
 
 		if ( superclass == null ) {
 			this.hierarchy = new Hierarchy(
@@ -36,6 +40,19 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 		else {
 			this.hierarchy = null;
 		}
+		if ( hierarchy == null ) {
+			// not the root - just return the "normal" attribute list
+			declaredNavigables =  declaredAttributes;
+		}else {
+
+			// otherwise, combine the id and other attributes
+			declaredNavigables = new ArrayList();
+			declaredNavigables.add( hierarchy.getIdentifierDescriptor() );
+			declaredNavigables.addAll( declaredAttributes );
+		}
+
+		this.navigables = new ArrayList<>();
+		collectHierarchicalNavigables( navigables, this );
 	}
 
 	@Override
@@ -65,11 +82,12 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 
 	@Override
 	public List<Navigable<?>> getNavigables() {
-		final List<Navigable<?>> list = new ArrayList<>();
-
-		collectHierarchicalNavigables( list, this );
-
-		return list;
+//		final List<Navigable<?>> list = new ArrayList<>();
+//
+//		collectHierarchicalNavigables( list, this );
+//
+//		return list;
+		return navigables;
 	}
 
 	private void collectHierarchicalNavigables(List<Navigable<?>> list, InheritanceCapable<?> container) {
@@ -83,17 +101,7 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List getDeclaredNavigables() {
-		if ( hierarchy == null ) {
-			// not the root - just return the "normal" attribute list
-			return declaredAttributes;
-		}
-
-		// otherwise, combine the id and other attributes
-		final List completeList = new ArrayList();
-		completeList.add( hierarchy.getIdentifierDescriptor() );
-		completeList.addAll( declaredAttributes );
-
-		return completeList;
+		return declaredNavigables;
 	}
 
 	private <N extends Navigable<?>> List<N> filter(List<N> completeNavigableList, Class<N> filterType) {

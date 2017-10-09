@@ -1,0 +1,5 @@
+Benchmark                                     Mode  Cnt         Score        Error  Units
+NavigableParallelStreamBenchmarkTest.testIt  thrpt  100    211801.738 ±   5024.707  ops/s
+NavigablesForBenchmarkTest.testIt            thrpt  100  18678618.842 ± 106101.634  ops/s
+NavigablesForEachBenchmarkTest.testIt        thrpt  100  17819957.691 ±  64788.642  ops/s
+NavigablesIterationBenchmarkTest.testIt      thrpt  100  17414507.316 ± 450172.165  ops/s

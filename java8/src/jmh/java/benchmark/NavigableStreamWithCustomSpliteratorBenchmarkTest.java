@@ -6,7 +6,7 @@ import org.openjdk.jmh.annotations.Benchmark;
 /**
  * @author Andrea Boriero
  */
-public class NavigableStreamBenchmarkTest extends BenchmarkTestBaseSetUp {
+public class NavigableStreamWithCustomSpliteratorBenchmarkTest extends BenchmarkTestBaseSetUp {
 
 	@Benchmark
 	public void testIt(TestState state) {
