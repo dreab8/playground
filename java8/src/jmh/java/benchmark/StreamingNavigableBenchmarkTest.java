@@ -15,7 +15,7 @@ import org.openjdk.jmh.annotations.Benchmark;
 /**
  * @author Andrea Boriero
  */
-public class StreamingNavigableBenchmarkTest extends BenchmarkTestBaseSetUp {
+public class StreamingNavigableBenchmarkTest {
 	@Benchmark
 	public void testIt(BenchmarkTestBaseSetUp.TestState state) {
 		final CountKeeper countKeeper = new CountKeeper();
