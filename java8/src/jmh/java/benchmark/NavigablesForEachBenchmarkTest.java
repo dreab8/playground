@@ -18,7 +18,7 @@ public class NavigablesForEachBenchmarkTest extends BenchmarkTestBaseSetUp {
 	@SuppressWarnings("unchecked")
 	@Benchmark
 	public void testIt(TestState state) {
-		final Object[] hydratedState = new Object[ state.totalAttributeCount ];
+		final Object[] hydratedState = new Object[state.totalAttributeCount];
 
 		final int count = state.totalAttributeCount;
 
@@ -26,9 +26,11 @@ public class NavigablesForEachBenchmarkTest extends BenchmarkTestBaseSetUp {
 			state.leafEntityDescriptor.getNavigables()
 					.forEach(
 							navigable -> {
-								final StateArrayElementContributor contributor = (StateArrayElementContributor) navigable;
-								final int index = contributor.getStateArrayPosition();
-								hydratedState[ index ] = contributor.deepCopy( hydratedState[ index ] );
+								if ( StateArrayElementContributor.class.isInstance( navigable ) ) {
+									final StateArrayElementContributor contributor = (StateArrayElementContributor) navigable;
+									final int index = contributor.getStateArrayPosition();
+									hydratedState[index] = contributor.deepCopy( hydratedState[index] );
+								}
 							}
 					);
 		}

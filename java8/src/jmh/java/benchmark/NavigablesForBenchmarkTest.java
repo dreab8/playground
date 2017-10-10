@@ -6,6 +6,7 @@
  */
 package benchmark;
 
+import chp7.Navigable;
 import chp7.StateArrayElementContributor;
 import org.openjdk.jmh.annotations.Benchmark;
 
@@ -17,18 +18,19 @@ public class NavigablesForBenchmarkTest extends BenchmarkTestBaseSetUp {
 	@SuppressWarnings("unchecked")
 	@Benchmark
 	public void testIt(TestState state) {
-		final Object[] hydratedState = new Object[ state.totalAttributeCount ];
+		final Object[] hydratedState = new Object[state.totalAttributeCount];
 
 		final int count = state.totalAttributeCount;
 
 		for ( int position = 0; position < count; position++ ) {
-
-			hydratedState[ position ] = ( (StateArrayElementContributor) state.leafEntityDescriptor
+			Navigable<?> navigable = state.leafEntityDescriptor
 					.getNavigables()
-					.get( position ) )
-					.deepCopy( hydratedState[ position ] );
+					.get( position );
+			if ( StateArrayElementContributor.class.isInstance( navigable ) ) {
+				hydratedState[position] = ( (StateArrayElementContributor) navigable )
+						.deepCopy( hydratedState[position] );
+			}
 		}
 		assert hydratedState[0] == StateArrayElementContributor.NOT_NULL;
-
 	}
 }

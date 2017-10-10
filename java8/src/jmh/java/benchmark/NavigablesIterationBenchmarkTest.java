@@ -18,12 +18,14 @@ public class NavigablesIterationBenchmarkTest extends BenchmarkTestBaseSetUp {
 	@SuppressWarnings("unchecked")
 	@Benchmark
 	public void testIt(TestState state) {
-		final Object[] hydratedState = new Object[ state.totalAttributeCount ];
+		final Object[] hydratedState = new Object[state.totalAttributeCount];
 
 		for ( Navigable<?> navigable : state.leafEntityDescriptor.getNavigables() ) {
-			final StateArrayElementContributor contributor = (StateArrayElementContributor) navigable;
-			final int index = contributor.getStateArrayPosition();
-			hydratedState[ index ] = contributor.deepCopy( hydratedState[ index ] );
+			if ( StateArrayElementContributor.class.isInstance( navigable ) ) {
+				final StateArrayElementContributor contributor = (StateArrayElementContributor) navigable;
+				final int index = contributor.getStateArrayPosition();
+				hydratedState[index] = contributor.deepCopy( hydratedState[index] );
+			}
 		}
 
 		assert hydratedState[0] == StateArrayElementContributor.NOT_NULL;
