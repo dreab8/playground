@@ -32,9 +32,8 @@ public class StreamSpliteratorApproach extends BenchmarkTestBaseSetUp {
 		final Object[] hydratedState = new Object[ state.totalStateArrayContributorCount ];
 
 		final ImprovedFilterableNavigableSpliterator spliterator = new ImprovedFilterableNavigableSpliterator(
-				state.leafEntityDescriptor,
-				StateArrayElementContributor.class,
-				true
+				state.leafEntityDescriptor.getNavigables(),
+				StateArrayElementContributor.class
 		);
 
 		StreamSupport.stream( spliterator, false ).forEach(

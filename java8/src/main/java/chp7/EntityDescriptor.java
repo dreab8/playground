@@ -8,7 +8,7 @@ package chp7;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Spliterator;
 
 /**
  * @author Andrea Boriero
@@ -135,11 +135,14 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 		return completeList;
 	}
 
-	private <N extends Navigable<?>> List<N> filter(List<N> completeNavigableList, Class<N> filterType) {
-		return completeNavigableList.stream()
-				.filter( filterType::isInstance )
-				.map( filterType::cast )
-				.collect( Collectors.toList() );
+	@Override
+	@SuppressWarnings("unchecked")
+	public <N extends Navigable<?>> Spliterator<N> declaredNavigableSource(Class<N> filterType) {
+		if ( filterType == null || Navigable.class.equals( filterType ) ) {
+			return (Spliterator<N>) getDeclaredNavigables().spliterator();
+		}
+
+		return new ImprovedFilterableNavigableSpliterator( declaredNavigables, filterType );
 	}
 
 	@Override
@@ -147,4 +150,13 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 		return super.toString() + "[" + getName()+ "]";
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public <N extends Navigable<?>> Spliterator<N> navigableSource(Class<N> filterType) {
+		if ( filterType == null || Navigable.class.equals( filterType ) ) {
+			return (Spliterator<N>) navigables.spliterator();
+		}
+
+		return new ImprovedFilterableNavigableSpliterator( navigables, filterType );
+	}
 }

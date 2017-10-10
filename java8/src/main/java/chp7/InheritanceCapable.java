@@ -24,15 +24,7 @@ public interface InheritanceCapable<J> extends NavigableContainer<J> {
 	List<CustomAttribute<?>> getDeclaredAttributes();
 	List<Navigable<?>> getDeclaredNavigables();
 
-	@SuppressWarnings("unchecked")
-	default <N extends Navigable<?>> Spliterator<N> navigableSource(Class<N> filterType) {
-		return new FilterableNavigableSpliterator( this, filterType, true );
-	}
-
-	@SuppressWarnings("unchecked")
-	default <N extends Navigable<?>> Spliterator<N> declaredNavigableSource(Class<N> filterType) {
-		return new FilterableNavigableSpliterator( this, filterType, false );
-	}
+	<N extends Navigable<?>> Spliterator<N> declaredNavigableSource(Class<N> filterType);
 
 	default  <N extends Navigable<?>> Stream<N> declaredNavigableStream(Class<N> filterType) {
 		return StreamSupport.stream( declaredNavigableSource( filterType ), false );

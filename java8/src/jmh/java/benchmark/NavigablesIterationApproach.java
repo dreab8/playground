@@ -16,7 +16,7 @@ import org.openjdk.jmh.annotations.Benchmark;
  * @author Steve Ebersole
  */
 @SuppressWarnings("unused")
-public class NavigablesIterationBenchmarkTest extends BenchmarkTestBaseSetUp {
+public class NavigablesIterationApproach extends BenchmarkTestBaseSetUp {
 
 	@Test
 	public void testIt() {
@@ -24,7 +24,7 @@ public class NavigablesIterationBenchmarkTest extends BenchmarkTestBaseSetUp {
 		state.setUp();
 
 		try {
-			testIt( state );
+			benchmarkIt( state );
 		}
 		finally {
 			state.tearDown();
@@ -33,7 +33,7 @@ public class NavigablesIterationBenchmarkTest extends BenchmarkTestBaseSetUp {
 
 	@SuppressWarnings({"unchecked", "WeakerAccess"})
 	@Benchmark
-	public void testIt(TestState state) {
+	public void benchmarkIt(TestState state) {
 		final Object[] hydratedState = new Object[state.totalStateArrayContributorCount];
 
 		for ( Navigable<?> navigable : state.leafEntityDescriptor.getNavigables() ) {

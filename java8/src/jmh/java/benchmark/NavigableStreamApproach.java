@@ -9,11 +9,11 @@ import org.openjdk.jmh.annotations.Benchmark;
  * @author Andrea Boriero
  */
 @SuppressWarnings("unused")
-public class NavigableStreamBenchmarkTest extends BenchmarkTestBaseSetUp {
+public class NavigableStreamApproach extends BenchmarkTestBaseSetUp {
 
 	@SuppressWarnings({"unchecked", "WeakerAccess"})
 	@Benchmark
-	public void testStreamWithCustomSpliterator(TestState state) {
+	public void benchmarkIt(TestState state) {
 		final Object[] hydratedState = new Object[ state.totalStateArrayContributorCount ];
 
 		state.leafEntityDescriptor.navigableStream( StateArrayElementContributor.class )
@@ -28,12 +28,12 @@ public class NavigableStreamBenchmarkTest extends BenchmarkTestBaseSetUp {
 	}
 
 	@Test
-	public void testStreamWithCustomSpliterator() {
+	public void testIt() {
 		TestState state = new TestState();
 		state.setUp();
 
 		try {
-			testStreamWithCustomSpliterator( state );
+			benchmarkIt( state );
 		}
 		finally {
 			state.tearDown();
