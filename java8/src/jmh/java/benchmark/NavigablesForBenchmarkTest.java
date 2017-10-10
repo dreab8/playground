@@ -6,6 +6,8 @@
  */
 package benchmark;
 
+import java.util.List;
+
 import chp7.Navigable;
 import chp7.StateArrayElementContributor;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -20,15 +22,15 @@ public class NavigablesForBenchmarkTest extends BenchmarkTestBaseSetUp {
 	public void testIt(TestState state) {
 		final Object[] hydratedState = new Object[state.totalAttributeCount];
 
-		final int count = state.totalAttributeCount;
+		final List<Navigable<?>> navigables = state.leafEntityDescriptor
+				.getNavigables();
 
-		for ( int position = 0; position < count; position++ ) {
-			Navigable<?> navigable = state.leafEntityDescriptor
-					.getNavigables()
-					.get( position );
+		for ( int position = 0; position < navigables.size(); position++ ) {
+			Navigable<?> navigable = navigables.get( position );
 			if ( StateArrayElementContributor.class.isInstance( navigable ) ) {
-				hydratedState[position] = ( (StateArrayElementContributor) navigable )
-						.deepCopy( hydratedState[position] );
+				final StateArrayElementContributor contributor = (StateArrayElementContributor) navigable;
+				hydratedState[contributor.getStateArrayPosition()] = (contributor)
+						.deepCopy( hydratedState[contributor.getStateArrayPosition()] );
 			}
 		}
 		assert hydratedState[0] == StateArrayElementContributor.NOT_NULL;

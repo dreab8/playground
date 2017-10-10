@@ -22,18 +22,17 @@ public class NavigablesForEachBenchmarkTest extends BenchmarkTestBaseSetUp {
 
 		final int count = state.totalAttributeCount;
 
-		for ( int position = 0; position < count; position++ ) {
-			state.leafEntityDescriptor.getNavigables()
-					.forEach(
-							navigable -> {
-								if ( StateArrayElementContributor.class.isInstance( navigable ) ) {
-									final StateArrayElementContributor contributor = (StateArrayElementContributor) navigable;
-									final int index = contributor.getStateArrayPosition();
-									hydratedState[index] = contributor.deepCopy( hydratedState[index] );
-								}
+
+		state.leafEntityDescriptor.getNavigables()
+				.forEach(
+						navigable -> {
+							if ( StateArrayElementContributor.class.isInstance( navigable ) ) {
+								final StateArrayElementContributor contributor = (StateArrayElementContributor) navigable;
+								final int index = contributor.getStateArrayPosition();
+								hydratedState[index] = contributor.deepCopy( hydratedState[index] );
 							}
-					);
-		}
+						}
+				);
 
 		assert hydratedState[0] == StateArrayElementContributor.NOT_NULL;
 	}

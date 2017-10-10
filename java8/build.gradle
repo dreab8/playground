@@ -93,8 +93,8 @@ asciidoctor.doLast(
 jmh {
     iterations = 5 //default 10
     fork = 5 //default 10
-    humanOutputFile = project.file("${project.projectDir}/reports/jmh/human_${getDate()}.txt") // human-readable output file
-    resultsFile = project.file("${project.projectDir}/reports/jmh/results_${getDate()}.txt") // results file
+    humanOutputFile = project.file("${project.buildDir}/reports/jmh/human.txt") // human-readable output file
+    resultsFile = project.file("${project.buildDir}/reports/jmh/results.txt") // results file
     jmhVersion = '1.19'
 }
 
@@ -107,8 +107,4 @@ task wrapper(type: Wrapper) {
     gradleVersion = '4.2.1'
     // grab sources, docs as well... better IDE integration
     distributionType = 'ALL'
-}
-
-def getDate() {
-    new Date().format('yyyyMMdd_HH:mm:ss')
 }
