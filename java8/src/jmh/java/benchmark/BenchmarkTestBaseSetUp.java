@@ -32,10 +32,10 @@ public class BenchmarkTestBaseSetUp {
 
 		@Setup
 		public void setUp() {
-			List<CustomAttribute> rootEntityAttributes = Collections.emptyList();
+			List<CustomAttribute<?>> rootEntityAttributes = Collections.emptyList();
 			this.rootEntityDescriptor = new EntityDescriptor<>( "Root", null, rootEntityAttributes );
 
-			List<CustomAttribute> middleEntityAttributes = new ArrayList<>();
+			List<CustomAttribute<?>> middleEntityAttributes = new ArrayList<>();
 			middleEntityAttributes.add( new CustomAttribute( 1 ) );
 			middleEntityAttributes.add( new CustomAttribute( 2 ) );
 			this.middleEntityDescriptor = new EntityDescriptor(
