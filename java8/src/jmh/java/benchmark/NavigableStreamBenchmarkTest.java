@@ -11,15 +11,33 @@ public class NavigableStreamBenchmarkTest extends BenchmarkTestBaseSetUp {
 
 	@SuppressWarnings("unchecked")
 	@Benchmark
-	public void testIt(TestState state) {
+	public void testStreamWithCustomSpliterator(TestState state) {
 		final Object[] hydratedState = new Object[ state.totalAttributeCount ];
 
 		state.leafEntityDescriptor.navigableStream( StateArrayElementContributor.class )
-				.parallel()
 				.forEach(
 						attribute -> {
 							int position = attribute.getStateArrayPosition();
 							hydratedState[ position ] = attribute.deepCopy( hydratedState[ position ] );
+						}
+				);
+
+		assert hydratedState[0] == StateArrayElementContributor.NOT_NULL;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Benchmark
+	public void testStreamWithoutSpliterator(TestState state) {
+		final Object[] hydratedState = new Object[state.totalAttributeCount];
+
+		state.leafEntityDescriptor.getNavigables()
+				.stream()
+				.filter( StateArrayElementContributor.class::isInstance )
+				.map( StateArrayElementContributor.class::cast )
+				.forEach(
+						attribute -> {
+							int position = attribute.getStateArrayPosition();
+							hydratedState[position] = attribute.deepCopy( hydratedState[position] );
 						}
 				);
 
