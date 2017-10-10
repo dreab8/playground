@@ -9,6 +9,8 @@ package chp7;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Spliterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Andrea Boriero
@@ -109,14 +111,17 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <N extends Navigable<?>> List<N> getNavigables(Class<N> filterType) {
+	public <N extends Navigable<?>> Stream<N> navigableStream(Class<N> filterType) {
 		if ( indicatesNoFiltering( filterType ) ) {
-			return (List<N>) navigables;
+			return (Stream<N>) navigables.stream();
 		}
 
-		List<N> filtered = new ArrayList<>();
-		collectHierarchicalNavigables( this, (List<Navigable<?>>) filtered, filterType );
-		return filtered;
+		Spliterator<N> spliterator = new ImprovedFilterableNavigableSpliterator<N>(
+				navigables,
+				filterType
+		);
+
+		return StreamSupport.stream( spliterator, false );
 	}
 
 	@Override
@@ -137,26 +142,19 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <N extends Navigable<?>> Spliterator<N> declaredNavigableSource(Class<N> filterType) {
-		if ( filterType == null || Navigable.class.equals( filterType ) ) {
-			return (Spliterator<N>) getDeclaredNavigables().spliterator();
+	public <N extends Navigable<?>> Stream<N> declaredNavigableStream(Class<N> filterType) {
+		if ( indicatesNoFiltering( filterType ) ) {
+			return (Stream<N>) declaredNavigables.stream();
 		}
 
-		return new ImprovedFilterableNavigableSpliterator( declaredNavigables, filterType );
+		return StreamSupport.stream(
+				new ImprovedFilterableNavigableSpliterator( declaredNavigables, filterType ),
+				false
+		);
 	}
 
 	@Override
 	public String toString() {
 		return super.toString() + "[" + getName()+ "]";
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <N extends Navigable<?>> Spliterator<N> navigableSource(Class<N> filterType) {
-		if ( filterType == null || Navigable.class.equals( filterType ) ) {
-			return (Spliterator<N>) navigables.spliterator();
-		}
-
-		return new ImprovedFilterableNavigableSpliterator( navigables, filterType );
 	}
 }

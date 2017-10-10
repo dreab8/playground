@@ -28,8 +28,7 @@ public class StreamOperationApproach extends BenchmarkTestBaseSetUp {
 	public void benchmarkIt(TestState state) {
 		final Object[] hydratedState = new Object[state.totalStateArrayContributorCount];
 
-		state.leafEntityDescriptor.getNavigables()
-				.stream()
+		state.leafEntityDescriptor.navigableStream()
 				.filter( StateArrayElementContributor.class::isInstance )
 				.map( StateArrayElementContributor.class::cast )
 				.forEach(
