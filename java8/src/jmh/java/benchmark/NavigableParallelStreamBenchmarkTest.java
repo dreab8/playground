@@ -1,5 +1,7 @@
 package benchmark;
 
+import org.junit.Test;
+
 import chp7.StateArrayElementContributor;
 import org.openjdk.jmh.annotations.Benchmark;
 
@@ -8,10 +10,37 @@ import org.openjdk.jmh.annotations.Benchmark;
  */
 @SuppressWarnings("unused")
 public class NavigableParallelStreamBenchmarkTest extends BenchmarkTestBaseSetUp {
-	@SuppressWarnings("unchecked")
+
+	@Test
+	public void testStreamParallelWithCustomSpliterator() {
+		TestState state = new TestState();
+		state.setUp();
+
+		try {
+			testStreamParallelWithCustomSpliterator( state );
+		}
+		finally {
+			state.tearDown();
+		}
+	}
+
+	@Test
+	public void testStreamParallelWithoutCuastomSpliterator() {
+		TestState state = new TestState();
+		state.setUp();
+
+		try {
+			testStreamParallelWithoutCuastomSpliterator( state );
+		}
+		finally {
+			state.tearDown();
+		}
+	}
+
+	@SuppressWarnings({"unchecked", "WeakerAccess"})
 	@Benchmark
 	public void testStreamParallelWithCustomSpliterator(TestState state) {
-		final Object[] hydratedState = new Object[ state.totalAttributeCount ];
+		final Object[] hydratedState = new Object[ state.totalStateArrayContributorCount ];
 
 		state.leafEntityDescriptor.navigableStream( StateArrayElementContributor.class )
 				.parallel()

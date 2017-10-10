@@ -8,6 +8,8 @@ package benchmark;
 
 import java.util.List;
 
+import org.junit.Test;
+
 import chp7.Navigable;
 import chp7.StateArrayElementContributor;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -17,22 +19,39 @@ import org.openjdk.jmh.annotations.Benchmark;
  */
 @SuppressWarnings("unused")
 public class NavigablesForBenchmarkTest extends BenchmarkTestBaseSetUp {
-	@SuppressWarnings("unchecked")
+
+	@Test
+	public void testIt() {
+		TestState state = new TestState();
+		state.setUp();
+
+		try {
+			testIt( state );
+		}
+		finally {
+			state.tearDown();
+		}
+	}
+
+	@SuppressWarnings({"unchecked", "WeakerAccess"})
 	@Benchmark
 	public void testIt(TestState state) {
-		final Object[] hydratedState = new Object[state.totalAttributeCount];
+		final Object[] hydratedState = new Object[state.totalStateArrayContributorCount];
 
-		final List<Navigable<?>> navigables = state.leafEntityDescriptor
-				.getNavigables();
+		final List<Navigable<?>> navigables = state.leafEntityDescriptor.getNavigables();
 
-		for ( int position = 0; position < navigables.size(); position++ ) {
-			Navigable<?> navigable = navigables.get( position );
-			if ( StateArrayElementContributor.class.isInstance( navigable ) ) {
-				final StateArrayElementContributor contributor = (StateArrayElementContributor) navigable;
-				hydratedState[contributor.getStateArrayPosition()] = (contributor)
-						.deepCopy( hydratedState[contributor.getStateArrayPosition()] );
+		for ( int i = 0, count = state.totalAttributeCount; i < count; i++ ) {
+			final Navigable<?> navigable = navigables.get( i );
+
+			if ( !StateArrayElementContributor.class.isInstance( navigable ) ) {
+				continue;
 			}
+
+			final StateArrayElementContributor contributor = (StateArrayElementContributor) navigable;
+			final int index = contributor.getStateArrayPosition();
+			hydratedState[index] = contributor.deepCopy( hydratedState[index] );
 		}
+
 		assert hydratedState[0] == StateArrayElementContributor.NOT_NULL;
 	}
 }

@@ -6,6 +6,8 @@
  */
 package benchmark;
 
+import org.junit.Test;
+
 import chp7.StateArrayElementContributor;
 import org.openjdk.jmh.annotations.Benchmark;
 
@@ -15,10 +17,23 @@ import org.openjdk.jmh.annotations.Benchmark;
 @SuppressWarnings("unused")
 public class NavigablesForEachBenchmarkTest extends BenchmarkTestBaseSetUp {
 
-	@SuppressWarnings("unchecked")
+	@Test
+	public void testIt() {
+		TestState state = new TestState();
+		state.setUp();
+
+		try {
+			testIt( state );
+		}
+		finally {
+			state.tearDown();
+		}
+	}
+
+	@SuppressWarnings({"unchecked", "WeakerAccess"})
 	@Benchmark
 	public void testIt(TestState state) {
-		final Object[] hydratedState = new Object[state.totalAttributeCount];
+		final Object[] hydratedState = new Object[state.totalStateArrayContributorCount];
 
 		final int count = state.totalAttributeCount;
 

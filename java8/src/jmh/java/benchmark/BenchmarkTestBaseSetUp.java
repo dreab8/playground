@@ -29,6 +29,7 @@ public class BenchmarkTestBaseSetUp {
 		public EntityDescriptor<?> leafEntityDescriptor;
 
 		public int totalAttributeCount = 5;
+		public int totalStateArrayContributorCount = 4;
 
 		@Setup
 		public void setUp() {
