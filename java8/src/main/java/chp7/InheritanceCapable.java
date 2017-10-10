@@ -21,7 +21,7 @@ public interface InheritanceCapable<J> extends NavigableContainer<J> {
 
 	InheritanceCapable<? super J> getSuperclassType();
 
-	List<CustomAttribute> getDeclaredAttributes();
+	List<CustomAttribute<?>> getDeclaredAttributes();
 	List<Navigable<?>> getDeclaredNavigables();
 
 	@SuppressWarnings("unchecked")

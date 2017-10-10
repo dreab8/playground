@@ -9,7 +9,7 @@ package chp7;
 /**
  * @author Andrea Boriero
  */
-public class CustomAttribute implements NonIdAttribute {
+public class CustomAttribute<J> implements NonIdAttribute<J> {
 	private final int navPosition;
 	private final int stateArrayPosition;
 

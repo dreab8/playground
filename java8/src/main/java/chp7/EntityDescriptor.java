@@ -17,25 +17,64 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 	private final Hierarchy hierarchy;
 	private final String name;
 	private final InheritanceCapable<? super J> superclass;
-	private final List<CustomAttribute> declaredAttributes;
+	private final List<CustomAttribute<?>> declaredAttributes;
+
+	private final List<Navigable<?>> declaredNavigables;
+	private final List<Navigable<?>> navigables;
 
 	public EntityDescriptor(
 			String name,
-			InheritanceCapable superclass,
-			List<CustomAttribute> declaredAttributes) {
+			InheritanceCapable<? super J> superclass,
+			List<CustomAttribute<?>> declaredAttributes) {
 		this.name = name;
 		this.superclass = superclass;
 		this.declaredAttributes = declaredAttributes;
 
+		this.declaredNavigables = new ArrayList<>();
+		this.navigables = new ArrayList<>();
+
 		if ( superclass == null ) {
 			this.hierarchy = new Hierarchy(
 					this,
-					() -> 0
+					new SimpleIdentifierDescriptor()
 			);
 		}
 		else {
 			this.hierarchy = null;
 		}
+
+		declaredNavigables.addAll( declaredAttributes );
+		collectHierarchicalNavigables( this, navigables );
+	}
+
+	private void collectHierarchicalNavigables(InheritanceCapable<?> container, List<Navigable<?>> list) {
+		collectHierarchicalNavigables( container, list, null );
+	}
+
+	private void collectHierarchicalNavigables(
+			InheritanceCapable<?> container,
+			List<Navigable<?>> list,
+			Class navTypeFilter) {
+		if ( container.getSuperclassType() != null ) {
+			// supers first
+			collectHierarchicalNavigables( container.getSuperclassType(), list, navTypeFilter );
+		}
+
+		if ( indicatesNoFiltering( navTypeFilter ) ) {
+			list.addAll( container.getDeclaredNavigables() );
+		}
+		else {
+			for ( Navigable<?> navigable : container.getDeclaredNavigables() ) {
+				if ( navTypeFilter.isInstance( navigable ) ) {
+					list.add( navigable );
+				}
+			}
+		}
+
+	}
+
+	private boolean indicatesNoFiltering(Class navTypeFilter) {
+		return navTypeFilter == null || Navigable.class.equals( navTypeFilter );
 	}
 
 	@Override
@@ -59,25 +98,25 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 	}
 
 	@Override
-	public List<CustomAttribute> getDeclaredAttributes() {
+	public List<CustomAttribute<?>> getDeclaredAttributes() {
 		return declaredAttributes;
 	}
 
 	@Override
 	public List<Navigable<?>> getNavigables() {
-		final List<Navigable<?>> list = new ArrayList<>();
-
-		collectHierarchicalNavigables( list, this );
-
-		return list;
+		return navigables;
 	}
 
-	private void collectHierarchicalNavigables(List<Navigable<?>> list, InheritanceCapable<?> container) {
-		if ( container.getSuperclassType() != null ) {
-			collectHierarchicalNavigables( list, container.getSuperclassType() );
+	@Override
+	@SuppressWarnings("unchecked")
+	public <N extends Navigable<?>> List<N> getNavigables(Class<N> filterType) {
+		if ( indicatesNoFiltering( filterType ) ) {
+			return (List<N>) navigables;
 		}
 
-		list.addAll( container.getDeclaredNavigables() );
+		List<N> filtered = new ArrayList<>();
+		collectHierarchicalNavigables( this, (List<Navigable<?>>) filtered, filterType );
+		return filtered;
 	}
 
 	@Override

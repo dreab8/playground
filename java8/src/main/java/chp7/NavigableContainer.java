@@ -11,6 +11,8 @@ import java.util.stream.StreamSupport;
 public interface NavigableContainer<J> {
 	List<Navigable<?>> getNavigables();
 
+	<N extends Navigable<?>> List<N> getNavigables(Class<N> filterType);
+
 	@SuppressWarnings("unchecked")
 	default <N extends Navigable<?>> Spliterator<N> navigableSource() {
 		return navigableSource( null );
