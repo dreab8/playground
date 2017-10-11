@@ -2,7 +2,7 @@ package benchmark;
 
 import org.junit.Test;
 
-import chp7.StateArrayElementContributor;
+import org.hibernate.orm.model.StateArrayElementContributor;
 import org.openjdk.jmh.annotations.Benchmark;
 
 /**

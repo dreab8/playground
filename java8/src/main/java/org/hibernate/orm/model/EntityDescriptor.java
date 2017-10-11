@@ -4,7 +4,7 @@
  * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
  * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
  */
-package chp7;
+package org.hibernate.orm.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,9 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 	private final Hierarchy hierarchy;
 	private final String name;
 	private final InheritanceCapable<? super J> superclass;
-	private final List<CustomAttribute<?>> declaredAttributes;
+
+	private final List<PersistentAttribute<?>> declaredAttributes;
+	private final List<PersistentAttribute<?>> attributes;
 
 	private final List<Navigable<?>> declaredNavigables;
 	private final List<Navigable<?>> navigables;
@@ -27,10 +29,12 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 	public EntityDescriptor(
 			String name,
 			InheritanceCapable<? super J> superclass,
-			List<CustomAttribute<?>> declaredAttributes) {
+			List<PersistentAttribute<?>> declaredAttributes) {
 		this.name = name;
 		this.superclass = superclass;
-		this.declaredAttributes = declaredAttributes;
+
+		this.declaredAttributes = new ArrayList<>( declaredAttributes );
+		this.attributes = new ArrayList<>();
 
 		this.declaredNavigables = new ArrayList<>();
 		this.navigables = new ArrayList<>();
@@ -44,35 +48,6 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 		else {
 			this.hierarchy = null;
 		}
-
-		declaredNavigables.addAll( declaredAttributes );
-		collectHierarchicalNavigables( this, navigables );
-	}
-
-	private void collectHierarchicalNavigables(InheritanceCapable<?> container, List<Navigable<?>> list) {
-		collectHierarchicalNavigables( container, list, null );
-	}
-
-	private void collectHierarchicalNavigables(
-			InheritanceCapable<?> container,
-			List<Navigable<?>> list,
-			Class navTypeFilter) {
-		if ( container.getSuperclassType() != null ) {
-			// supers first
-			collectHierarchicalNavigables( container.getSuperclassType(), list, navTypeFilter );
-		}
-
-		if ( indicatesNoFiltering( navTypeFilter ) ) {
-			list.addAll( container.getDeclaredNavigables() );
-		}
-		else {
-			for ( Navigable<?> navigable : container.getDeclaredNavigables() ) {
-				if ( navTypeFilter.isInstance( navigable ) ) {
-					list.add( navigable );
-				}
-			}
-		}
-
 	}
 
 	private boolean indicatesNoFiltering(Class navTypeFilter) {
@@ -100,7 +75,12 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 	}
 
 	@Override
-	public List<CustomAttribute<?>> getDeclaredAttributes() {
+	public List<PersistentAttribute<?>> getAttributes() {
+		return attributes;
+	}
+
+	@Override
+	public List<PersistentAttribute<?>> getDeclaredAttributes() {
 		return declaredAttributes;
 	}
 
@@ -156,5 +136,32 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 	@Override
 	public String toString() {
 		return super.toString() + "[" + getName()+ "]";
+	}
+
+	public void complete() {
+		if ( hierarchy != null ) {
+			// we are the root of the hierarchy
+			declaredNavigables.add( hierarchy.getIdentifierDescriptor() );
+		}
+
+		navigables.add( getHierarchy().getIdentifierDescriptor() );
+
+		declaredNavigables.addAll( declaredAttributes );
+
+		addNavigables( navigables, attributes );
+	}
+
+	@Override
+	public void addNavigables(
+			List<Navigable<?>> navigables,
+			List<PersistentAttribute<?>> attributes) {
+		if ( getSuperclassType() != null ) {
+			getSuperclassType().addNavigables( navigables, attributes );
+		}
+
+		for ( PersistentAttribute<?> declaredAttribute : declaredAttributes ) {
+			navigables.add( declaredAttribute );
+			attributes.add( declaredAttribute );
+		}
 	}
 }

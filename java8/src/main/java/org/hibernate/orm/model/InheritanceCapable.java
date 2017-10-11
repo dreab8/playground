@@ -4,7 +4,7 @@
  * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
  * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
  */
-package chp7;
+package org.hibernate.orm.model;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -26,7 +26,8 @@ public interface InheritanceCapable<J> extends NavigableContainer<J> {
 	 * 		although an alternative solution is to use the filtered Stream for those
 	 * 		JPA metamodel method impls and still be able to delete this one
 	 */
-	List<CustomAttribute<?>> getDeclaredAttributes();
+	List<PersistentAttribute<?>> getAttributes();
+	List<PersistentAttribute<?>> getDeclaredAttributes();
 
 	/**
 	 * Obtain a List of all the Navigables declared by this container.
@@ -45,7 +46,7 @@ public interface InheritanceCapable<J> extends NavigableContainer<J> {
 	 * @apiNote The returned Stream contains just the Navigables declared on
 	 * this type, exclusive of the the supertype's Navigables.
 	 *
-	 * @see InheritanceCapable#navigableStream(Class)
+	 * @see InheritanceCapable#navigableStream()
 	 */
 	default Stream<Navigable> declaredNavigableStream() {
 		return declaredNavigableStream( null );
@@ -67,5 +68,8 @@ public interface InheritanceCapable<J> extends NavigableContainer<J> {
 	 */
 	<N extends Navigable<?>> Stream<N> declaredNavigableStream(Class<N> filterType);
 
+	void addNavigables(
+			List<Navigable<?>> navigables,
+			List<PersistentAttribute<?>> attributes);
 }
 

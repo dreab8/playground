@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import chp7.CustomAttribute;
-import chp7.EntityDescriptor;
+import org.hibernate.orm.model.CustomAttribute;
+import org.hibernate.orm.model.EntityDescriptor;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -21,6 +21,7 @@ import org.openjdk.jmh.annotations.TearDown;
  * @author Andrea Boriero
  */
 public class BenchmarkTestBaseSetUp {
+	@SuppressWarnings({"unchecked", "WeakerAccess"})
 	@State(Scope.Thread)
 	public static class TestState {
 
@@ -34,7 +35,7 @@ public class BenchmarkTestBaseSetUp {
 		@Setup
 		public void setUp() {
 			List<CustomAttribute<?>> rootEntityAttributes = Collections.emptyList();
-			this.rootEntityDescriptor = new EntityDescriptor<>( "Root", null, rootEntityAttributes );
+			this.rootEntityDescriptor = new EntityDescriptor( "Root", null, rootEntityAttributes );
 
 			List<CustomAttribute<?>> middleEntityAttributes = new ArrayList<>();
 			middleEntityAttributes.add( new CustomAttribute( 1 ) );
@@ -53,6 +54,10 @@ public class BenchmarkTestBaseSetUp {
 					middleEntityDescriptor,
 					leafEntityAttributes
 			);
+
+			rootEntityDescriptor.complete();
+			middleEntityDescriptor.complete();
+			leafEntityDescriptor.complete();
 		}
 
 		@TearDown

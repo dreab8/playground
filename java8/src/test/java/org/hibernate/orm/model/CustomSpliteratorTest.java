@@ -4,7 +4,7 @@
  * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
  * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
  */
-package chp7;
+package org.hibernate.orm.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +34,9 @@ public class CustomSpliteratorTest {
 		leafEntityAttributes.add( new CustomAttribute( 4 ) );
 		EntityDescriptor leafEntityDescriptor = new EntityDescriptor( "Leaf", rootEntityDescriptor, leafEntityAttributes );
 
+		rootEntityDescriptor.complete();
+		leafEntityDescriptor.complete();
+
 		testIds( leafEntityDescriptor );
 	}
 
@@ -52,6 +55,10 @@ public class CustomSpliteratorTest {
 		leafEntityAttributes.add( new CustomAttribute( 4 ) );
 		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", middleEntityDescriptor, leafEntityAttributes );
 
+		rootEntityDescriptor.complete();
+		middleEntityDescriptor.complete();
+		leafEntityDescriptor.complete();
+
 		testIds( leafEntityDescriptor );
 	}
 
@@ -69,6 +76,10 @@ public class CustomSpliteratorTest {
 		leafEntityAttributes.add( new CustomAttribute( 3 ) );
 		leafEntityAttributes.add( new CustomAttribute( 4 ) );
 		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", middleEntityDescriptor, leafEntityAttributes );
+
+		rootEntityDescriptor.complete();
+		middleEntityDescriptor.complete();
+		leafEntityDescriptor.complete();
 
 		testIds( leafEntityDescriptor );
 	}
@@ -133,6 +144,9 @@ public class CustomSpliteratorTest {
 		leafEntityAttributes.add( new CustomAttribute( 4 ) );
 		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", rootEntityDescriptor, leafEntityAttributes );
 
+		rootEntityDescriptor.complete();
+		leafEntityDescriptor.complete();
+
 		leafEntityDescriptor.navigableStream().parallel().forEach(
 				navigable -> System.out.println( "Streaming : " + navigable.getNavigablePosition() )
 		);
@@ -149,6 +163,9 @@ public class CustomSpliteratorTest {
 		leafEntityAttributes.add( new CustomAttribute( 3 ) );
 		leafEntityAttributes.add( new CustomAttribute( 4 ) );
 		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", rootEntityDescriptor, leafEntityAttributes );
+
+		rootEntityDescriptor.complete();
+		leafEntityDescriptor.complete();
 
 		leafEntityDescriptor.navigableStream( ).forEach(
 				navigable -> System.out.println( "Streaming : " + navigable.getNavigablePosition() )

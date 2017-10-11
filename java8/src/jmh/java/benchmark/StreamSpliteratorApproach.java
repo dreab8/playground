@@ -4,8 +4,8 @@ import java.util.stream.StreamSupport;
 
 import org.junit.Test;
 
-import chp7.ImprovedFilterableNavigableSpliterator;
-import chp7.StateArrayElementContributor;
+import org.hibernate.orm.model.ImprovedFilterableNavigableSpliterator;
+import org.hibernate.orm.model.StateArrayElementContributor;
 import org.openjdk.jmh.annotations.Benchmark;
 
 /**

@@ -1,4 +1,4 @@
-package chp7;
+package org.hibernate.orm.model;
 
 /**
  * @author Steve Ebersole
