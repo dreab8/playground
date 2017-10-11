@@ -7,8 +7,10 @@ import java.util.function.Consumer;
 
 /**
  * @author Steve Ebersole
+ * @author Andrea Boriero
  */
-public class ImprovedFilterableNavigableSpliteratorSecondVersion<N extends Navigable<?>> implements Spliterator<N> {
+public class FilteredNavigableSpliterator<N extends Navigable<?>> implements Spliterator<N> {
+	@SuppressWarnings("WeakerAccess")
 	public static final int CHARACTERISTICS = DISTINCT & NONNULL & IMMUTABLE;
 
 	private final List<Navigable<?>> listOfNavigables;
@@ -16,7 +18,7 @@ public class ImprovedFilterableNavigableSpliteratorSecondVersion<N extends Navig
 
 	private Iterator iterator;
 
-	public ImprovedFilterableNavigableSpliteratorSecondVersion(
+	public FilteredNavigableSpliterator(
 			List<Navigable<?>> listOfNavigables,
 			Class<N> filterType) {
 		this.listOfNavigables = listOfNavigables;
@@ -25,6 +27,7 @@ public class ImprovedFilterableNavigableSpliteratorSecondVersion<N extends Navig
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean tryAdvance(Consumer<? super N> action) {
 
 		while ( iterator.hasNext() ) {

@@ -111,7 +111,7 @@ public class CustomSpliteratorTest {
 				4
 		);
 
-		final ImprovedFilterableNavigableSpliteratorSecondVersion<StateArrayElementContributor<?>> spliterator = new ImprovedFilterableNavigableSpliteratorSecondVersion(
+		final FilteredNavigableSpliterator<StateArrayElementContributor<?>> spliterator = new FilteredNavigableSpliterator(
 				entityDescriptor.getNavigables(),
 				StateArrayElementContributor.class
 		);

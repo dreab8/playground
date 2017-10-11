@@ -2,10 +2,11 @@ package benchmark;
 
 import java.util.stream.StreamSupport;
 
+import org.hibernate.orm.model.FilteredNavigableSpliterator;
+import org.hibernate.orm.model.StateArrayElementContributor;
+
 import org.junit.Test;
 
-import org.hibernate.orm.model.ImprovedFilterableNavigableSpliterator;
-import org.hibernate.orm.model.StateArrayElementContributor;
 import org.openjdk.jmh.annotations.Benchmark;
 
 /**
@@ -26,12 +27,12 @@ public class StreamSpliteratorApproach extends BenchmarkTestBaseSetUp {
 		}
 	}
 
-	@SuppressWarnings({"unchecked", "WeakerAccess"})
 	@Benchmark
+	@SuppressWarnings({"unchecked", "WeakerAccess"})
 	public void benchmarkIt(TestState state) {
 		final Object[] hydratedState = new Object[ state.totalStateArrayContributorCount ];
 
-		final ImprovedFilterableNavigableSpliterator spliterator = new ImprovedFilterableNavigableSpliterator(
+		final FilteredNavigableSpliterator spliterator = new FilteredNavigableSpliterator(
 				state.leafEntityDescriptor.getNavigables(),
 				StateArrayElementContributor.class
 		);

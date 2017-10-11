@@ -96,7 +96,7 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 			return (Stream<N>) navigables.stream();
 		}
 
-		Spliterator<N> spliterator = new ImprovedFilterableNavigableSpliterator<N>(
+		Spliterator<N> spliterator = new FilteredNavigableSpliterator(
 				navigables,
 				filterType
 		);
@@ -128,7 +128,7 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 		}
 
 		return StreamSupport.stream(
-				new ImprovedFilterableNavigableSpliterator( declaredNavigables, filterType ),
+				new FilteredNavigableSpliterator( declaredNavigables, filterType ),
 				false
 		);
 	}
