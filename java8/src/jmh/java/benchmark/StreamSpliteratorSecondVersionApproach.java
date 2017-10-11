@@ -1,21 +1,27 @@
+/*
+ * Hibernate, Relational Persistence for Idiomatic Java
+ *
+ * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
+ * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ */
 package benchmark;
 
 import java.util.stream.StreamSupport;
 
 import org.junit.Test;
 
-import chp7.ImprovedFilterableNavigableSpliterator;
+import chp7.ImprovedFilterableNavigableSpliteratorSecondVersion;
 import chp7.StateArrayElementContributor;
 import org.openjdk.jmh.annotations.Benchmark;
 
 /**
- * @author Steve Ebersole
+ * @author Andrea Boriero
  */
-public class StreamSpliteratorApproach extends BenchmarkTestBaseSetUp {
+public class StreamSpliteratorSecondVersionApproach {
 
 	@Test
 	public void testIt() {
-		TestState state = new TestState();
+		BenchmarkTestBaseSetUp.TestState state = new BenchmarkTestBaseSetUp.TestState();
 		state.setUp();
 
 		try {
@@ -28,10 +34,10 @@ public class StreamSpliteratorApproach extends BenchmarkTestBaseSetUp {
 
 	@SuppressWarnings({"unchecked", "WeakerAccess"})
 	@Benchmark
-	public void benchmarkIt(TestState state) {
+	public void benchmarkIt(BenchmarkTestBaseSetUp.TestState state) {
 		final Object[] hydratedState = new Object[ state.totalStateArrayContributorCount ];
 
-		final ImprovedFilterableNavigableSpliterator spliterator = new ImprovedFilterableNavigableSpliterator(
+		final ImprovedFilterableNavigableSpliteratorSecondVersion spliterator = new ImprovedFilterableNavigableSpliteratorSecondVersion(
 				state.leafEntityDescriptor.getNavigables(),
 				StateArrayElementContributor.class
 		);
@@ -46,5 +52,4 @@ public class StreamSpliteratorApproach extends BenchmarkTestBaseSetUp {
 
 		assert hydratedState[0] == StateArrayElementContributor.NOT_NULL;
 	}
-
 }

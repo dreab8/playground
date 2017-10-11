@@ -1,7 +1,0 @@
-[[chp6]]
-== Collecting data with streams
-
-To-DO
-
-<<Chp5.adoc#chp5, <= Chapter 5 >>  <<Chp7.adoc#chp7,  Chapter 7 => >>
-
