@@ -11,4 +11,6 @@ package org.hibernate.orm.model;
  */
 public interface Navigable<J>{
 	int getNavigablePosition();
+
+	void setNavPosition(int navPosition);
 }

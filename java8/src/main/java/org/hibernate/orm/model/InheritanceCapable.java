@@ -67,9 +67,5 @@ public interface InheritanceCapable<J> extends NavigableContainer<J> {
 	 * @see InheritanceCapable#navigableStream(Class)
 	 */
 	<N extends Navigable<?>> Stream<N> declaredNavigableStream(Class<N> filterType);
-
-	void addNavigables(
-			List<Navigable<?>> navigables,
-			List<PersistentAttribute<?>> attributes);
 }
 

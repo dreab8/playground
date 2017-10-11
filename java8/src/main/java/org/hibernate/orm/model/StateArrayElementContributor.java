@@ -14,8 +14,11 @@ public interface StateArrayElementContributor<J> extends Navigable<J> {
 
 	@SuppressWarnings("unchecked")
 	default J deepCopy(J original) {
-		// for now just return null, the call and the array access are the
-		// 		important aspect to test
+		// for now just return a marker
+		// 		-- the call and the array access are the important aspect to
+		// 			test anyway
 		return (J) NOT_NULL;
 	}
+
+	void setStateArrayPosition(int stateArrayPosition);
 }

@@ -25,13 +25,13 @@ public class CustomSpliteratorTest {
 	@Test
 	public void testIt(){
 		List<CustomAttribute> rootEntityAttributes = new ArrayList<>(  );
-		rootEntityAttributes.add( new CustomAttribute( 1 ) );
-		rootEntityAttributes.add( new CustomAttribute( 2 ) );
+		rootEntityAttributes.add( new CustomAttribute( "root - 1" ) );
+		rootEntityAttributes.add( new CustomAttribute( "root - 2" ) );
 		EntityDescriptor rootEntityDescriptor = new EntityDescriptor( "Root", null, rootEntityAttributes );
 
 		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
-		leafEntityAttributes.add( new CustomAttribute( 3 ) );
-		leafEntityAttributes.add( new CustomAttribute( 4 ) );
+		leafEntityAttributes.add( new CustomAttribute( "leaf - 3" ) );
+		leafEntityAttributes.add( new CustomAttribute( "leaf - 4" ) );
 		EntityDescriptor leafEntityDescriptor = new EntityDescriptor( "Leaf", rootEntityDescriptor, leafEntityAttributes );
 
 		rootEntityDescriptor.complete();
@@ -43,16 +43,16 @@ public class CustomSpliteratorTest {
 	@Test
 	public void testMiddleMissingAttribute() {
 		List<CustomAttribute> rootEntityAttributes = new ArrayList<>(  );
-		rootEntityAttributes.add( new CustomAttribute( 1 ) );
-		rootEntityAttributes.add( new CustomAttribute( 2 ) );
+		rootEntityAttributes.add( new CustomAttribute( "root - 1" ) );
+		rootEntityAttributes.add( new CustomAttribute( "root - 2" ) );
 		EntityDescriptor<?> rootEntityDescriptor = new EntityDescriptor( "Root", null, rootEntityAttributes );
 
 		List<CustomAttribute> middleEntityAttributes = Collections.emptyList();
 		EntityDescriptor middleEntityDescriptor = new EntityDescriptor( "Middle", rootEntityDescriptor, middleEntityAttributes );
 
 		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
-		leafEntityAttributes.add( new CustomAttribute( 3 ) );
-		leafEntityAttributes.add( new CustomAttribute( 4 ) );
+		leafEntityAttributes.add( new CustomAttribute( "leaf - 3" ) );
+		leafEntityAttributes.add( new CustomAttribute( "leaf - 4" ) );
 		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", middleEntityDescriptor, leafEntityAttributes );
 
 		rootEntityDescriptor.complete();
@@ -68,13 +68,13 @@ public class CustomSpliteratorTest {
 		EntityDescriptor<?> rootEntityDescriptor = new EntityDescriptor( "Root", null, rootEntityAttributes );
 
 		List<CustomAttribute> middleEntityAttributes = new ArrayList<>(  );
-		middleEntityAttributes.add( new CustomAttribute( 1 ) );
-		middleEntityAttributes.add( new CustomAttribute( 2 ) );
+		middleEntityAttributes.add( new CustomAttribute( "middle - 1" ) );
+		middleEntityAttributes.add( new CustomAttribute( "middle - 2" ) );
 		EntityDescriptor middleEntityDescriptor = new EntityDescriptor( "Middle", rootEntityDescriptor, middleEntityAttributes );
 
 		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
-		leafEntityAttributes.add( new CustomAttribute( 3 ) );
-		leafEntityAttributes.add( new CustomAttribute( 4 ) );
+		leafEntityAttributes.add( new CustomAttribute( "leaf - 3" ) );
+		leafEntityAttributes.add( new CustomAttribute( "leaf - 4" ) );
 		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", middleEntityDescriptor, leafEntityAttributes );
 
 		rootEntityDescriptor.complete();
@@ -135,13 +135,13 @@ public class CustomSpliteratorTest {
 	@Test
 	public void testParallel() {
 		List<CustomAttribute> rootEntityAttributes = new ArrayList<>(  );
-		rootEntityAttributes.add( new CustomAttribute( 1 ) );
-		rootEntityAttributes.add( new CustomAttribute( 2 ) );
+		rootEntityAttributes.add( new CustomAttribute( "root - 1" ) );
+		rootEntityAttributes.add( new CustomAttribute( "root - 2" ) );
 		EntityDescriptor<?> rootEntityDescriptor = new EntityDescriptor( "Root", null, rootEntityAttributes );
 
 		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
-		leafEntityAttributes.add( new CustomAttribute( 3 ) );
-		leafEntityAttributes.add( new CustomAttribute( 4 ) );
+		leafEntityAttributes.add( new CustomAttribute( "leaf - 3" ) );
+		leafEntityAttributes.add( new CustomAttribute( "leaf - 4" ) );
 		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", rootEntityDescriptor, leafEntityAttributes );
 
 		rootEntityDescriptor.complete();
@@ -155,13 +155,13 @@ public class CustomSpliteratorTest {
 	@Test
 	public void testFiltered() {
 		List<CustomAttribute> rootEntityAttributes = new ArrayList<>(  );
-		rootEntityAttributes.add( new CustomAttribute( 1 ) );
-		rootEntityAttributes.add( new CustomAttribute( 2 ) );
+		rootEntityAttributes.add( new CustomAttribute( "root - 1" ) );
+		rootEntityAttributes.add( new CustomAttribute( "root - 2" ) );
 		EntityDescriptor<?> rootEntityDescriptor = new EntityDescriptor( "Root", null, rootEntityAttributes );
 
 		List<CustomAttribute> leafEntityAttributes = new ArrayList<>(  );
-		leafEntityAttributes.add( new CustomAttribute( 3 ) );
-		leafEntityAttributes.add( new CustomAttribute( 4 ) );
+		leafEntityAttributes.add( new CustomAttribute( "leaf - 3" ) );
+		leafEntityAttributes.add( new CustomAttribute( "leaf - 4" ) );
 		EntityDescriptor<?> leafEntityDescriptor = new EntityDescriptor( "Leaf", rootEntityDescriptor, leafEntityAttributes );
 
 		rootEntityDescriptor.complete();

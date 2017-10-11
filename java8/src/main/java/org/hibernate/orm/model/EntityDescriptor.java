@@ -107,17 +107,7 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List getDeclaredNavigables() {
-		if ( hierarchy == null ) {
-			// not the root - just return the "normal" attribute list
-			return declaredAttributes;
-		}
-
-		// otherwise, combine the id and other attributes
-		final List completeList = new ArrayList();
-		completeList.add( hierarchy.getIdentifierDescriptor() );
-		completeList.addAll( declaredAttributes );
-
-		return completeList;
+		return declaredNavigables;
 	}
 
 	@Override
@@ -139,29 +129,45 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 	}
 
 	public void complete() {
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		// handle the identifier
+		//		- ultimately would need handling for version, discriminator, etc
+
 		if ( hierarchy != null ) {
 			// we are the root of the hierarchy
 			declaredNavigables.add( hierarchy.getIdentifierDescriptor() );
 		}
 
-		navigables.add( getHierarchy().getIdentifierDescriptor() );
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		// order the declared attributes by name
+		//		- and add to declaredNavigables
 
+		declaredAttributes.sort( (o1, o2) ->  o1.getAttributeInfo().compareTo( o2.getName() ) );
 		declaredNavigables.addAll( declaredAttributes );
 
-		addNavigables( navigables, attributes );
-	}
 
-	@Override
-	public void addNavigables(
-			List<Navigable<?>> navigables,
-			List<PersistentAttribute<?>> attributes) {
+		int navCount = 0;
+		int stateContributorCount = 0;
+
 		if ( getSuperclassType() != null ) {
-			getSuperclassType().addNavigables( navigables, attributes );
+			final List<Navigable<?>> superNavigables = getSuperclassType().getNavigables();
+			navigables.addAll( superNavigables );
+			navCount = superNavigables.size();
+
+			final List<PersistentAttribute<?>> superAttributes = getSuperclassType().getAttributes();
+			this.attributes.addAll( superAttributes );
+			stateContributorCount = superAttributes.size();
 		}
 
-		for ( PersistentAttribute<?> declaredAttribute : declaredAttributes ) {
-			navigables.add( declaredAttribute );
-			attributes.add( declaredAttribute );
+		for ( Navigable<?> declaredNavigable : declaredNavigables ) {
+			declaredNavigable.setNavPosition( navCount++ );
+
+			if ( StateArrayElementContributor.class.isInstance( declaredNavigable ) ) {
+				StateArrayElementContributor.class.cast( declaredNavigable ).setStateArrayPosition( stateContributorCount++ );
+			}
 		}
+
+		attributes.addAll( declaredAttributes );
+		navigables.addAll( declaredNavigables );
 	}
 }

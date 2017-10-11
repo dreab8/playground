@@ -10,12 +10,28 @@ package org.hibernate.orm.model;
  * @author Andrea Boriero
  */
 public class CustomAttribute<J> implements NonIdAttribute<J> {
-	private final int navPosition;
-	private final int stateArrayPosition;
+	private final String name;
 
-	public CustomAttribute(int navPosition) {
+	private int navPosition;
+	private int stateArrayPosition;
+
+	public CustomAttribute(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public void setStateArrayPosition(int stateArrayPosition) {
+		this.stateArrayPosition = stateArrayPosition;
+	}
+
+	@Override
+	public void setNavPosition(int navPosition) {
 		this.navPosition = navPosition;
-		this.stateArrayPosition = navPosition-1;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 	@Override
@@ -29,12 +45,12 @@ public class CustomAttribute<J> implements NonIdAttribute<J> {
 	}
 
 	@Override
-	public String toString() {
-		return super.toString() + "[id=" + navPosition + "]";
+	public String getAttributeInfo() {
+		return "simple state field [" + navPosition + "] - " + name;
 	}
 
 	@Override
-	public String getAttributeInfo() {
-		return "simple state field : " + navPosition;
+	public String toString() {
+		return super.toString() + "[nav-pos=" + navPosition + "]";
 	}
 }
