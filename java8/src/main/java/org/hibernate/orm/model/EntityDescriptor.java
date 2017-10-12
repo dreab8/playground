@@ -135,6 +135,7 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 
 		if ( hierarchy != null ) {
 			// we are the root of the hierarchy
+			assert getSuperclassType() == null;
 			declaredNavigables.add( hierarchy.getIdentifierDescriptor() );
 		}
 
@@ -150,6 +151,8 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 		int stateContributorCount = 0;
 
 		if ( getSuperclassType() != null ) {
+			assert hierarchy == null;
+
 			final List<Navigable<?>> superNavigables = getSuperclassType().getNavigables();
 			navigables.addAll( superNavigables );
 			navCount = superNavigables.size();
@@ -161,13 +164,15 @@ public class EntityDescriptor<J> implements InheritanceCapable<J> {
 
 		for ( Navigable<?> declaredNavigable : declaredNavigables ) {
 			declaredNavigable.setNavPosition( navCount++ );
+			navigables.add( declaredNavigable );
+
+			if ( PersistentAttribute.class.isInstance( declaredNavigable ) ) {
+				attributes.add( (PersistentAttribute) declaredNavigable );
+			}
 
 			if ( StateArrayElementContributor.class.isInstance( declaredNavigable ) ) {
 				StateArrayElementContributor.class.cast( declaredNavigable ).setStateArrayPosition( stateContributorCount++ );
 			}
 		}
-
-		attributes.addAll( declaredAttributes );
-		navigables.addAll( declaredNavigables );
 	}
 }

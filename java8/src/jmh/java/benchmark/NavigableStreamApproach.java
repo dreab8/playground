@@ -11,8 +11,8 @@ import org.openjdk.jmh.annotations.Benchmark;
 @SuppressWarnings("unused")
 public class NavigableStreamApproach extends BenchmarkTestBaseSetUp {
 
-	@SuppressWarnings({"unchecked", "WeakerAccess"})
 	@Benchmark
+	@SuppressWarnings({"unchecked", "WeakerAccess"})
 	public void benchmarkIt(TestState state) {
 		final Object[] hydratedState = new Object[ state.totalStateArrayContributorCount ];
 
